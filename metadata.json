@@ -1,0 +1,7 @@
+{
+  "name": "QR Meal Access System",
+  "description": "A full-stack web application for managing hostel meal access using QR codes and SQLite.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
