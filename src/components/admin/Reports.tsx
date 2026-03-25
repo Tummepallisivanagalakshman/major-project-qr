@@ -2,24 +2,35 @@ import React, { useState, useEffect } from 'react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, 
   Tooltip, ResponsiveContainer, LineChart, Line,
-  AreaChart, Area
+  AreaChart, Area, Cell
 } from 'recharts';
 import { 
   Download, FileText, Calendar, 
-  TrendingUp, TrendingDown, PieChart as PieIcon
+  TrendingUp, TrendingDown, PieChart as PieIcon,
+  Sparkles, Activity, Target, Zap
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const Reports: React.FC = () => {
   const [mealStats, setMealStats] = useState<any[]>([]);
   const [revenueStats, setRevenueStats] = useState<any[]>([]);
 
   const fetchReports = async () => {
-    const [mealRes, revRes] = await Promise.all([
-      fetch('/api/admin/reports/meals'),
-      fetch('/api/admin/reports/revenue')
-    ]);
-    setMealStats(await mealRes.json());
-    setRevenueStats(await revRes.json());
+    try {
+      const [mealRes, revRes] = await Promise.all([
+        fetch('/api/admin/reports/meals'),
+        fetch('/api/admin/reports/revenue')
+      ]);
+      const mealData = await mealRes.json();
+      const revData = await revRes.json();
+      
+      setMealStats(Array.isArray(mealData) ? mealData : (mealData.success ? mealData.data || mealData.meals || [] : []));
+      setRevenueStats(Array.isArray(revData) ? revData : (revData.success ? revData.data || revData.revenue || [] : []));
+    } catch (err) {
+      console.error('Failed to fetch reports:', err);
+      setMealStats([]);
+      setRevenueStats([]);
+    }
   };
 
   useEffect(() => {
@@ -28,9 +39,12 @@ const Reports: React.FC = () => {
 
   const exportCSV = () => {
     const headers = ['Date', 'Type', 'Value'];
+    const safeMealStats = Array.isArray(mealStats) ? mealStats : [];
+    const safeRevenueStats = Array.isArray(revenueStats) ? revenueStats : [];
+    
     const rows = [
-      ...mealStats.map(m => [m.date, 'Meal Count', m.count]),
-      ...revenueStats.map(r => [r.date, 'Revenue', r.total])
+      ...safeMealStats.map(m => [m.date, 'Meal Count', m.count]),
+      ...safeRevenueStats.map(r => [r.date, 'Revenue', r.total])
     ];
     
     const csvContent = [
@@ -50,23 +64,26 @@ const Reports: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-10 animate-fade-in">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">Reports & Analytics</h2>
-          <p className="text-gray-500">Analyze hostel performance and trends.</p>
+          <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+            <Activity className="text-violet-500" size={32} />
+            Analytics Dashboard
+          </h2>
+          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">Deep insights into hostel operations, revenue, and student engagement.</p>
         </div>
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
           <button 
             onClick={exportCSV}
-            className="flex items-center gap-2 px-4 py-2 bg-white text-gray-600 rounded-xl border border-gray-100 shadow-sm hover:bg-gray-50 transition-all font-bold text-sm"
+            className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all font-black text-[10px] uppercase tracking-widest"
           >
             <Download size={18} />
             Export CSV
           </button>
           <button 
             onClick={() => window.print()}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all font-bold text-sm"
+            className="flex items-center gap-2 px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl shadow-xl shadow-slate-900/10 hover:scale-105 transition-all font-black text-[10px] uppercase tracking-widest"
           >
             <FileText size={18} />
             Print Report
@@ -75,74 +92,156 @@ const Reports: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800 mb-6">Revenue Trends (Last 30 Days)</h3>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card p-8 rounded-[2.5rem] border border-white/20 dark:border-white/5 shadow-2xl"
+        >
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+              <TrendingUp size={24} className="text-emerald-500" />
+              Revenue Trends
+            </h3>
+            <div className="px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase tracking-widest">
+              Last 30 Days
+            </div>
+          </div>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={revenueStats}>
+              <AreaChart data={Array.isArray(revenueStats) ? revenueStats : []}>
                 <defs>
                   <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{fontSize: 10}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10}} />
-                <Tooltip 
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                <XAxis 
+                  dataKey="date" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} 
+                  dy={10}
                 />
-                <Area type="monotone" dataKey="total" stroke="#3B82F6" fillOpacity={1} fill="url(#colorTotal)" strokeWidth={3} />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} 
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    borderRadius: '1.5rem', 
+                    border: 'none', 
+                    boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.25)',
+                    background: '#1e293b',
+                    color: '#fff',
+                    padding: '1rem'
+                  }}
+                  itemStyle={{ color: '#fff', fontWeight: 800 }}
+                  labelStyle={{ color: '#94a3b8', marginBottom: '0.5rem', fontWeight: 700 }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="total" 
+                  stroke="#8b5cf6" 
+                  fillOpacity={1} 
+                  fill="url(#colorTotal)" 
+                  strokeWidth={4} 
+                  animationDuration={2000}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800 mb-6">Meal Usage Statistics</h3>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="glass-card p-8 rounded-[2.5rem] border border-white/20 dark:border-white/5 shadow-2xl"
+        >
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+              <Zap size={24} className="text-amber-500" />
+              Meal Engagement
+            </h3>
+            <div className="px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-[10px] font-black uppercase tracking-widest">
+              Usage Stats
+            </div>
+          </div>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={mealStats}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{fontSize: 10}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10}} />
-                <Tooltip 
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+              <BarChart data={Array.isArray(mealStats) ? mealStats : []}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                <XAxis 
+                  dataKey="date" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} 
+                  dy={10}
                 />
-                <Bar dataKey="count" fill="#10B981" radius={[4, 4, 0, 0]} />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} 
+                />
+                <Tooltip 
+                  cursor={{ fill: 'rgba(0,0,0,0.02)' }}
+                  contentStyle={{ 
+                    borderRadius: '1.5rem', 
+                    border: 'none', 
+                    boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.25)',
+                    background: '#1e293b',
+                    color: '#fff',
+                    padding: '1rem'
+                  }}
+                  itemStyle={{ color: '#fff', fontWeight: 800 }}
+                  labelStyle={{ color: '#94a3b8', marginBottom: '0.5rem', fontWeight: 700 }}
+                />
+                <Bar dataKey="count" radius={[8, 8, 0, 0]} animationDuration={2000}>
+                  {(Array.isArray(mealStats) ? mealStats : []).map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#8b5cf6' : '#6366f1'} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </motion.div>
       </div>
 
-      <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-        <h3 className="text-lg font-bold text-gray-800 mb-6">Summary Metrics</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="p-6 bg-gray-50 rounded-2xl">
-            <div className="flex items-center gap-3 mb-2">
-              <TrendingUp size={20} className="text-emerald-500" />
-              <span className="text-sm font-bold text-gray-600 uppercase tracking-wider">Growth</span>
-            </div>
-            <div className="text-2xl font-bold text-gray-800">+12.5%</div>
-            <p className="text-xs text-gray-400 mt-1">Compared to last month</p>
-          </div>
-          <div className="p-6 bg-gray-50 rounded-2xl">
-            <div className="flex items-center gap-3 mb-2">
-              <TrendingDown size={20} className="text-red-500" />
-              <span className="text-sm font-bold text-gray-600 uppercase tracking-wider">Defaulters</span>
-            </div>
-            <div className="text-2xl font-bold text-gray-800">4.2%</div>
-            <p className="text-xs text-gray-400 mt-1">Students with overdue payments</p>
-          </div>
-          <div className="p-6 bg-gray-50 rounded-2xl">
-            <div className="flex items-center gap-3 mb-2">
-              <PieIcon size={20} className="text-blue-500" />
-              <span className="text-sm font-bold text-gray-600 uppercase tracking-wider">Occupancy Rate</span>
-            </div>
-            <div className="text-2xl font-bold text-gray-800">88%</div>
-            <p className="text-xs text-gray-400 mt-1">Total capacity utilized</p>
-          </div>
+      <div className="glass-card p-10 rounded-[3rem] border border-white/20 dark:border-white/5 shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none">
+          <Sparkles size={120} className="text-violet-500" />
+        </div>
+        
+        <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-10 flex items-center gap-3">
+          <Target size={28} className="text-violet-500" />
+          Executive Summary
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          {[
+            { label: 'Growth', value: '+12.5%', icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/10', desc: 'Compared to last month' },
+            { label: 'Defaulters', value: '4.2%', icon: TrendingDown, color: 'text-rose-500', bg: 'bg-rose-500/10', desc: 'Students with overdue payments' },
+            { label: 'Occupancy', value: '88%', icon: PieIcon, color: 'text-violet-500', bg: 'bg-violet-500/10', desc: 'Total capacity utilized' }
+          ].map((metric, i) => (
+            <motion.div 
+              key={i}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: i * 0.1 }}
+              className="relative group p-6 rounded-3xl bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100/50 dark:border-slate-700/50 hover:border-violet-500/30 transition-all"
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <div className={`p-4 ${metric.bg} ${metric.color} rounded-2xl group-hover:scale-110 transition-transform`}>
+                  <metric.icon size={24} />
+                </div>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{metric.label}</span>
+              </div>
+              <div className="text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-2">{metric.value}</div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{metric.desc}</p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </div>
