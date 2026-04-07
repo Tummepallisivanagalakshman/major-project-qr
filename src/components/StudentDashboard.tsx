@@ -168,9 +168,6 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
     e.preventDefault();
     const amount = parseFloat(paymentAmount);
     if (!amount || amount <= 0) return toast.error('Enter a valid amount');
-    const pending = (user.total_fees || 0) - (user.paid_amount || 0);
-    if (amount > pending) return toast.error('Amount exceeds pending fees');
-
     setIsProcessingPayment(true);
     const loadingToast = toast.loading("Processing secure transaction...");
     try {

@@ -60,12 +60,18 @@ async function startServer() {
       if (!token) return res.status(401).json({ success: false, message: "Unauthorized" });
 
       jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
-        if (err) return res.status(403).json({ success: false, message: "Invalid token" });
+        if (err) {
+          console.error("JWT verify error:", err);
+          return res.status(403).json({ success: false, message: "Invalid token" });
+        }
         
         if (user.role === 'student' && !user.student_id) {
           db.get("SELECT student_id FROM users WHERE id = ?", [user.id], (err, dbUser: any) => {
             if (dbUser) {
               user.student_id = dbUser.student_id;
+              console.log(`Fetched student_id ${user.student_id} for user ${user.id}`);
+            } else {
+              console.warn(`No student_id found in DB for user ${user.id}`);
             }
             req.user = user;
             next();
@@ -387,8 +393,11 @@ async function startServer() {
     app.post('/api/payments/pay', authenticateToken, (req: any, res) => {
       const { student_id, amount, mode } = req.body;
       
+      console.log(`Payment attempt: user_role=${req.user.role}, user_student_id=${req.user.student_id}, target_student_id=${student_id}, amount=${amount}`);
+      
       // Security: Ensure student can only pay for themselves
       if (req.user.role !== 'admin' && req.user.student_id !== student_id) {
+        console.warn(`Access denied: req.user.student_id (${req.user.student_id}) !== body.student_id (${student_id})`);
         return res.status(403).json({ success: false, message: "Access denied" });
       }
 
