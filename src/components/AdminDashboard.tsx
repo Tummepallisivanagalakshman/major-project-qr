@@ -36,6 +36,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }) => {
   const [stats, setStats] = useState<any>({});
   const [students, setStudents] = useState<any[]>([]);
   const [showScanner, setShowScanner] = useState(false);
+  const [scanResult, setScanResult] = useState<{ status: 'approve' | 'deny'; reason: string } | null>(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -127,8 +128,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }) => {
   };
 
   const handleScanSuccess = async (scannedData: string) => {
+    setScanResult(null);
     try {
-      const response = await fetch('/api/meal-access', {
+      const response = await fetch('/api/admin/meal-scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: scannedData }),
@@ -136,47 +138,18 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }) => {
       const data = await response.json();
       if (data.success) {
         playSound('success');
-        toast.success(`Approved: ${data.meal}`, {
-          icon: '✅',
-          style: {
-            borderRadius: '1rem',
-            background: '#1e293b',
-            color: '#fff',
-          },
-        });
+        setScanResult({ status: 'approve', reason: `Approved for ${data.meal}` });
         fetchData();
       } else {
         playSound('error');
-        if (data.message.includes('Already accessed') || data.message.includes('Duplicate')) {
-          toast.error('Duplicate QR', {
-            icon: '⚠️',
-            style: { borderRadius: '1rem', background: '#1e293b', color: '#fff' },
-          });
-        } else if (data.message.includes('Pending fees') || data.message.includes('Error')) {
-          toast.error(`Error: ${data.message}`, {
-            icon: '❌',
-            style: { borderRadius: '1rem', background: '#1e293b', color: '#fff' },
-          });
-        } else {
-          toast.error(data.message, {
-            icon: '❌',
-            style: { borderRadius: '1rem', background: '#1e293b', color: '#fff' },
-          });
-        }
+        setScanResult({ status: 'deny', reason: data.message || data.detail?.message || 'Access Denied' });
       }
     } catch (err) {
       playSound('error');
-      toast.error('Scanner error. Please try again.', {
-        icon: '❌',
-        style: {
-          borderRadius: '1rem',
-          background: '#1e293b',
-          color: '#fff',
-        },
-      });
+      setScanResult({ status: 'deny', reason: 'Scanner error. Please try again.' });
     }
-    // Do not close scanner automatically to allow continuous scanning
-    // setShowScanner(false);
+    // Auto-clear result after 4 seconds to allow next scan
+    setTimeout(() => setScanResult(null), 4000);
   };
 
   const [manualId, setManualId] = useState('');
@@ -435,6 +408,27 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }) => {
                   <QRScanner onScanSuccess={handleScanSuccess} />
                   <div className="absolute inset-0 border-[3px] border-violet-500/30 rounded-[2rem] pointer-events-none animate-pulse" />
                   
+                  {/* Scan Result Overlay */}
+                  <AnimatePresence>
+                    {scanResult && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.85 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.85 }}
+                        className={`absolute inset-0 flex flex-col items-center justify-center rounded-[2rem] z-20 ${
+                          scanResult.status === 'approve'
+                            ? 'bg-emerald-500/95'
+                            : 'bg-rose-500/95'
+                        }`}
+                      >
+                        <div className="text-6xl mb-4">{scanResult.status === 'approve' ? '✅' : '❌'}</div>
+                        <p className="text-white font-black text-2xl uppercase tracking-widest mb-2">
+                          {scanResult.status === 'approve' ? 'APPROVED' : 'DENIED'}
+                        </p>
+                        <p className="text-white/80 font-bold text-sm text-center px-6">{scanResult.reason}</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                   {/* Scanning line animation */}
                   <motion.div 
                     animate={{ top: ['0%', '100%', '0%'] }}

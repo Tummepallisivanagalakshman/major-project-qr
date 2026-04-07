@@ -16,6 +16,7 @@ import { useTheme } from '../context/ThemeContext';
 import MenuLogs from './MenuLogs';
 import Rules from './admin/Rules';
 import { toast } from 'react-hot-toast';
+import { io } from 'socket.io-client';
 
 interface StudentDashboardProps {
   user: any;
@@ -31,7 +32,6 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
   const [payments, setPayments] = useState<any[]>([]);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [menu, setMenu] = useState<any[]>([]);
-  const [showScanner, setShowScanner] = useState(false);
   const [isRefreshingQR, setIsRefreshingQR] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState('');
@@ -84,38 +84,20 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
     });
   }, [fetchData, user.full_name, user.email, user.phone]);
 
-  const handleScanSuccess = async (scannedData: string) => {
-    if (scannedData !== 'MESS_ACCESS') {
-      toast.error('Invalid QR Protocol detected.');
-      setShowScanner(false);
-      return;
-    }
-    try {
-      const response = await fetch('/api/meal-access', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ student_id: user.student_id }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        toast.success(`Approved: ${data.meal}`);
-        fetchData();
-        setShowScanner(false);
-      } else {
-        if (data.message.includes('Already accessed') || data.message.includes('Duplicate')) {
-          toast.error('Duplicate QR');
-        } else if (data.message.includes('Pending fees') || data.message.includes('Error')) {
-          toast.error(`Error: ${data.message}`);
+  useEffect(() => {
+    const socket = io('/');
+    socket.on('meal_scanned', (data: any) => {
+      if (data.student_id === user.student_id) {
+        if (data.status === 'deny') {
+          toast.error(data.reason, { duration: 8000, style: { background: '#fef2f2', color: '#991b1b', border: '1px solid #f87171' } });
         } else {
-          toast.error(data.message);
+          toast.success(data.reason, { duration: 5000 });
+          fetchData();
         }
-        setShowScanner(false);
       }
-    } catch (err) {
-      toast.error('Access verification failed.');
-      setShowScanner(false);
-    }
-  };
+    });
+    return () => { socket.disconnect(); };
+  }, [user.student_id, fetchData]);
 
   const downloadReceipt = (paymentId: string | number, amount: number, date: string) => {
     const doc = new jsPDF();
@@ -305,11 +287,17 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
   const [qrToken, setQrToken] = useState('');
 
   const generateQRToken = useCallback(() => {
+    const h = new Date().getHours();
+    const currentMeal = (6 <= h && h < 10) ? 'Breakfast' : ((12 <= h && h < 15) ? 'Lunch' : ((19 <= h && h < 22) ? 'Dinner' : ''));
+    if (!currentMeal) {
+      setQrToken('');
+      return;
+    }
     const tokenData = {
       student_id: user.student_id,
+      meal_type: currentMeal,
       timestamp: Date.now()
     };
-    // Base64 encode to make it look like a token and avoid simple text tampering
     setQrToken(btoa(JSON.stringify(tokenData)));
   }, [user.student_id]);
 
@@ -635,33 +623,61 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
                   </div>
 
                   {/* QR Card */}
-                  <div className="glass-card rounded-[2.5rem] p-10 flex flex-col items-center justify-center text-center relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-b from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-10">Secure Digital ID</h4>
-                    <div className="p-6 bg-white rounded-[2rem] shadow-2xl border border-slate-100 mb-10 relative group/qr transition-transform duration-500 hover:scale-105">
-                      <QRCodeCanvas value={qrToken || user.student_id} size={160} className="sm:size-[180px]" />
-                      <AnimatePresence>
-                        {isRefreshingQR && (
-                          <motion.div 
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center rounded-[2rem]"
-                          >
-                            <RefreshCw className="animate-spin text-violet-600" size={40} />
-                          </motion.div>
+                  {(() => {
+                    const h = new Date().getHours();
+                    const currentMeal = (6 <= h && h < 10) ? 'Breakfast' : ((12 <= h && h < 15) ? 'Lunch' : ((19 <= h && h < 22) ? 'Dinner' : ''));
+                    const mealColor = currentMeal === 'Breakfast' ? 'text-amber-500 bg-amber-500/10 border-amber-500/20' : currentMeal === 'Lunch' ? 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20' : 'text-indigo-500 bg-indigo-500/10 border-indigo-500/20';
+                    const mealIcon = currentMeal === 'Breakfast' ? '☀️' : currentMeal === 'Lunch' ? '🍽️' : '🌙';
+                    return (
+                      <div className="glass-card rounded-[2.5rem] p-10 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-gradient-to-b from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">Secure Digital ID</h4>
+                        
+                        {currentMeal ? (
+                          <>
+                            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-black uppercase tracking-widest mb-8 ${mealColor}`}>
+                              <span>{mealIcon}</span>
+                              <span>{currentMeal} QR</span>
+                            </div>
+                            <div className="p-6 bg-white rounded-[2rem] shadow-2xl border border-slate-100 mb-10 relative group/qr transition-transform duration-500 hover:scale-105">
+                              <QRCodeCanvas value={qrToken || user.student_id} size={160} className="sm:size-[180px]" />
+                              <AnimatePresence>
+                                {isRefreshingQR && (
+                                  <motion.div 
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center rounded-[2rem]"
+                                  >
+                                    <RefreshCw className="animate-spin text-violet-600" size={40} />
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
+                            <p className="text-[10px] text-slate-400 font-bold mb-6">Valid for this session only • Refreshes every 10s</p>
+                          </>
+                        ) : (
+                          <div className="py-10 flex flex-col items-center gap-4">
+                            <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-4xl">🕐</div>
+                            <p className="font-black text-slate-700 dark:text-slate-300 text-sm uppercase tracking-wider">Meal Counter Closed</p>
+                            <p className="text-xs text-slate-400 font-medium leading-relaxed max-w-[200px]">
+                              QR codes are available during:<br/>
+                              <span className="text-amber-500 font-black">Breakfast</span> 6–10am • <span className="text-emerald-500 font-black">Lunch</span> 12–3pm • <span className="text-indigo-500 font-black">Dinner</span> 7–10pm
+                            </p>
+                          </div>
                         )}
-                      </AnimatePresence>
-                    </div>
-                    <div className="flex gap-3 w-full relative z-10">
-                      <button onClick={downloadQR} className="flex-1 flex items-center justify-center gap-3 py-4 bg-slate-900 dark:bg-slate-800 text-white rounded-2xl hover:bg-slate-800 transition-all text-[11px] font-black uppercase tracking-widest shadow-xl shadow-slate-900/20 active:scale-95">
-                        <Download size={18} /> Export
-                      </button>
-                      <button onClick={refreshQR} className="p-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95">
-                        <RefreshCw size={18} className={isRefreshingQR ? 'animate-spin' : ''} />
-                      </button>
-                    </div>
-                  </div>
+                        
+                        <div className="flex gap-3 w-full relative z-10">
+                          <button onClick={downloadQR} className="flex-1 flex items-center justify-center gap-3 py-4 bg-slate-900 dark:bg-slate-800 text-white rounded-2xl hover:bg-slate-800 transition-all text-[11px] font-black uppercase tracking-widest shadow-xl shadow-slate-900/20 active:scale-95">
+                            <Download size={18} /> Export
+                          </button>
+                          <button onClick={refreshQR} className="p-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95">
+                            <RefreshCw size={18} className={isRefreshingQR ? 'animate-spin' : ''} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Middle Row: Room & Payments */}
@@ -785,13 +801,6 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
                         );
                       })}
                     </div>
-                    <button 
-                      onClick={() => setShowScanner(true)}
-                      className="w-full mt-10 flex items-center justify-center gap-3 py-4 border-2 border-dashed border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] hover:border-violet-300 dark:hover:border-violet-800 hover:text-violet-500 transition-all active:scale-95"
-                    >
-                      <Camera size={20} />
-                      Scan for Access
-                    </button>
                   </div>
 
                   {/* Recent Notifications */}
@@ -1295,7 +1304,9 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
             </motion.div>
           </motion.div>
         )}
+      </AnimatePresence>
 
+      <AnimatePresence>
         {showEditProfileModal && (
           <motion.div 
             initial={{ opacity: 0 }}
@@ -1363,87 +1374,44 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
         )}
       </AnimatePresence>
 
-      {/* Scanner Modal */}
+      {/* Logout Confirmation Modal */}
       <AnimatePresence>
-        {showScanner && (
+        {showLogoutConfirm && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-xl"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-xl"
           >
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="glass-card w-full max-w-md rounded-[3rem] p-10 shadow-2xl border border-slate-100 dark:border-slate-800/50"
+              className="glass-card w-full max-w-sm rounded-[3rem] p-10 shadow-2xl border border-slate-100 dark:border-slate-800/50 text-center"
             >
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Scan Mess QR</h3>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Attendance Verification</p>
-                </div>
-                <button onClick={() => setShowScanner(false)} className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors">
-                  <X size={20} />
-                </button>
+              <div className="w-20 h-20 bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <LogOut size={40} />
               </div>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-2">Logout</h3>
+              <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-10">Are you sure you want to end your session?</p>
               
-              <div className="relative rounded-[2rem] overflow-hidden border-4 border-slate-100 dark:border-slate-800/50 shadow-inner">
-                <QRScanner onScanSuccess={handleScanSuccess} />
-                <div className="absolute inset-0 pointer-events-none border-[40px] border-black/10"></div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 border-2 border-violet-500 rounded-3xl animate-pulse"></div>
-              </div>
-
-              <div className="mt-8 flex items-start gap-4 p-6 bg-violet-500/5 dark:bg-violet-500/10 rounded-[2rem] border border-violet-500/10">
-                <div className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center shadow-sm text-violet-600 shrink-0">
-                  <Info size={20} />
-                </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-bold">
-                  Align the Mess Counter QR code within the frame to automatically record your meal attendance.
-                </p>
+              <div className="flex flex-col gap-3">
+                <button 
+                  onClick={onLogout}
+                  className="w-full py-4 bg-rose-500 text-white rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-xl shadow-rose-500/20 hover:bg-rose-600 transition-all active:scale-95"
+                >
+                  Yes, Logout
+                </button>
+                <button 
+                  onClick={() => setShowLogoutConfirm(false)}
+                  className="w-full py-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95"
+                >
+                  Cancel
+                </button>
               </div>
             </motion.div>
           </motion.div>
         )}
-        {/* Logout Confirmation Modal */}
-        <AnimatePresence>
-          {showLogoutConfirm && (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-xl"
-            >
-              <motion.div 
-                initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                className="glass-card w-full max-w-sm rounded-[3rem] p-10 shadow-2xl border border-slate-100 dark:border-slate-800/50 text-center"
-              >
-                <div className="w-20 h-20 bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <LogOut size={40} />
-                </div>
-                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-2">Logout</h3>
-                <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-10">Are you sure you want to end your session?</p>
-                
-                <div className="flex flex-col gap-3">
-                  <button 
-                    onClick={onLogout}
-                    className="w-full py-4 bg-rose-500 text-white rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-xl shadow-rose-500/20 hover:bg-rose-600 transition-all active:scale-95"
-                  >
-                    Yes, Logout
-                  </button>
-                  <button 
-                    onClick={() => setShowLogoutConfirm(false)}
-                    className="w-full py-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </AnimatePresence>
     </div>
   );
