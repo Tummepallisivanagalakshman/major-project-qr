@@ -233,7 +233,7 @@ def meal_access(data: MealAccessModel, user: dict = Depends(verify_token), db: s
     if student.get("status") != "Active": raise HTTPException(status_code=403, detail={"success": False, "message": "Account is blocked."})
     
     h = datetime.now().hour
-    meal = "Breakfast" if 6<=h<10 else ("Lunch" if 12<=h<15 else ("Dinner" if 19<=h<22 else ""))
+    meal = "Breakfast" if h<11 else ("Lunch" if h<17 else "Dinner")
     if not meal: raise HTTPException(status_code=400, detail={"success": False, "message": "Meal counter is currently closed"})
     try:
         db.execute("INSERT INTO meal_records (student_id, meal_type, date) VALUES (?, ?, ?)", (student_id, meal, datetime.now().strftime("%Y-%m-%d")))
@@ -278,7 +278,7 @@ async def admin_meal_scan(req: Request, user: dict = Depends(require_admin), db:
         return {"success": False, "message": "Account is blocked"}
 
     h = datetime.now().hour
-    current_meal = "Breakfast" if 6<=h<10 else ("Lunch" if 12<=h<15 else ("Dinner" if 19<=h<22 else ""))
+    current_meal = "Breakfast" if h<11 else ("Lunch" if h<17 else "Dinner")
     
     if meal_type != current_meal or not current_meal:
         await sio.emit("meal_scanned", {"student_id": student_id, "status": "deny", "reason": "Meal time mismatch"})

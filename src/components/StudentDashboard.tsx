@@ -288,7 +288,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
 
   const generateQRToken = useCallback(() => {
     const h = new Date().getHours();
-    const currentMeal = (6 <= h && h < 10) ? 'Breakfast' : ((12 <= h && h < 15) ? 'Lunch' : ((19 <= h && h < 22) ? 'Dinner' : ''));
+    const currentMeal = (h < 11) ? 'Breakfast' : (h < 17) ? 'Lunch' : 'Dinner';
     if (!currentMeal) {
       setQrToken('');
       return;
@@ -563,11 +563,11 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
                                 <ShieldCheck size={14} className="text-white" />
                               </div>
                             </div>
-                            <p className="text-violet-600 dark:text-violet-400 font-black text-xs uppercase tracking-[0.2em]">{user.hostel_name} • Block {user.block}</p>
+                            <p className="text-violet-600 dark:text-violet-400 font-black text-xs uppercase tracking-[0.2em]">{user.hostel_name || 'Unassigned'} {user.block ? `• Block ${user.block}` : ''}</p>
                             <div className="flex flex-wrap items-center gap-3 mt-4">
                               <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-lg text-[10px] font-black uppercase tracking-widest">ID: {user.student_id}</span>
-                              <span className="px-3 py-1 bg-violet-500/10 text-violet-600 dark:text-violet-400 rounded-lg text-[10px] font-black uppercase tracking-widest border border-violet-500/10">{user.room_type}</span>
-                              <span className="px-3 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-widest border border-emerald-500/10">{user.sharing_type} Sharing</span>
+                              {user.room_type && <span className="px-3 py-1 bg-violet-500/10 text-violet-600 dark:text-violet-400 rounded-lg text-[10px] font-black uppercase tracking-widest border border-violet-500/10">{user.room_type}</span>}
+                              {user.sharing_type && <span className="px-3 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-widest border border-emerald-500/10">{user.sharing_type} Sharing</span>}
                             </div>
                           </div>
                           <div className="flex flex-row sm:flex-col gap-3 w-full sm:w-auto">
@@ -605,7 +605,10 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
                             </div>
                             <div className="flex flex-col">
                               <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Assigned Room</span>
-                              <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{user.room_number} <span className="text-slate-400 font-medium">({user.room_type})</span></span>
+                              <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                {user.room_number || 'Unallocated'} 
+                                {user.room_type && <span className="text-slate-400 font-medium"> ({user.room_type})</span>}
+                              </span>
                             </div>
                           </div>
                           <div className="flex items-center gap-4 group/item">
@@ -614,7 +617,10 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
                             </div>
                             <div className="flex flex-col">
                               <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Hostel Wing</span>
-                              <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{user.hostel_name} • {user.block} Block</span>
+                              <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                {user.hostel_name || 'Unassigned'} 
+                                {user.block && ` • ${user.block} Block`}
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -625,7 +631,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
                   {/* QR Card */}
                   {(() => {
                     const h = new Date().getHours();
-                    const currentMeal = (6 <= h && h < 10) ? 'Breakfast' : ((12 <= h && h < 15) ? 'Lunch' : ((19 <= h && h < 22) ? 'Dinner' : ''));
+                    const currentMeal = (h < 11) ? 'Breakfast' : (h < 17) ? 'Lunch' : 'Dinner';
                     const mealColor = currentMeal === 'Breakfast' ? 'text-amber-500 bg-amber-500/10 border-amber-500/20' : currentMeal === 'Lunch' ? 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20' : 'text-indigo-500 bg-indigo-500/10 border-indigo-500/20';
                     const mealIcon = currentMeal === 'Breakfast' ? '☀️' : currentMeal === 'Lunch' ? '🍽️' : '🌙';
                     return (
@@ -662,7 +668,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
                             <p className="font-black text-slate-700 dark:text-slate-300 text-sm uppercase tracking-wider">Meal Counter Closed</p>
                             <p className="text-xs text-slate-400 font-medium leading-relaxed max-w-[200px]">
                               QR codes are available during:<br/>
-                              <span className="text-amber-500 font-black">Breakfast</span> 6–10am • <span className="text-emerald-500 font-black">Lunch</span> 12–3pm • <span className="text-indigo-500 font-black">Dinner</span> 7–10pm
+                              <span className="text-amber-500 font-black">Breakfast</span> Midnight–11am • <span className="text-emerald-500 font-black">Lunch</span> 11am–5pm • <span className="text-indigo-500 font-black">Dinner</span> 5pm–Midnight
                             </p>
                           </div>
                         )}

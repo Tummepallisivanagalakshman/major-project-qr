@@ -1,0 +1,9 @@
+node_modules/
+dist/
+__pycache__/
+*.pyc
+hostel_system.db
+test_hostel_system.db
+.pytest_cache/
+.env
+.git/
