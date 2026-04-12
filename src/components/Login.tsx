@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail } from 'lucide-react';
+import { Mail, Building2, ShieldCheck, Sparkles, AlertCircle, Lock, ArrowRight, Zap } from 'lucide-react';
 import { loginUser } from '../lib/api';
 
 interface LoginProps {

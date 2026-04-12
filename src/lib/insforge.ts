@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { createClient } from '@insforge/sdk'
 
 // InsForge client — initialized once and reused across the app

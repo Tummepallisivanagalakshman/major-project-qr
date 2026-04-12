@@ -354,11 +354,7 @@ export const getAdminStats = async () => {
 };
 
 export const changePassword = async (oldPassword: string, newPassword: string) => {
-  const { error } = await insforge.auth.updateUser({
-    password: newPassword,
-  });
-  if (error) throw error;
-  return { success: true };
+  throw new Error('Direct password updates in InsForge require the reset-password flow. Please log out and click "Forgot Password".');
 };
 
 export const updateProfile = async (profileData: any) => {

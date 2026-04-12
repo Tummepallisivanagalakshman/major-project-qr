@@ -1,30 +1,30 @@
 import insforge from './insforge';
 
-/**
- * InsForge Realtime Wrapper
- * Replaces Socket.IO implementation
- */
-
 export const subscribeToMealScans = (callback: (payload: any) => void) => {
-  // Subscribe to 'meal_scanned' channel
-  const subscription = insforge.realtime
-    .subscribe('meal_scans', (payload) => {
-      callback(payload);
-    });
+  insforge.realtime.connect().then(() => {
+    insforge.realtime.subscribe('meal_scans');
+  });
+
+  const handler = (payload: any) => callback(payload);
+  insforge.realtime.on('scan_event', handler);
 
   return () => {
-    insforge.realtime.disconnect();
+    insforge.realtime.off('scan_event', handler);
+    insforge.realtime.unsubscribe('meal_scans');
   };
 };
 
 export const subscribeToPayments = (callback: (payload: any) => void) => {
-  const subscription = insforge.realtime
-    .subscribe('payments', (payload) => {
-      callback(payload);
-    });
+  insforge.realtime.connect().then(() => {
+    insforge.realtime.subscribe('payments');
+  });
+
+  const handler = (payload: any) => callback(payload);
+  insforge.realtime.on('payment_event', handler);
 
   return () => {
-    insforge.realtime.disconnect();
+    insforge.realtime.off('payment_event', handler);
+    insforge.realtime.unsubscribe('payments');
   };
 };
 
