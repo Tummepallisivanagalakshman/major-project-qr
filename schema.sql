@@ -83,23 +83,32 @@ ALTER TABLE public.rules ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.menu ENABLE ROW LEVEL SECURITY;
 
 -- Policies
+-- Admin Check Function (Bypasses RLS to avoid infinite recursion)
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles 
+    WHERE id = auth.uid() AND role = 'admin'
+  );
+$$ LANGUAGE sql SECURITY DEFINER;
+
 -- Profiles
 DO $$ BEGIN
-  CREATE POLICY "Profiles are viewable by owner and admin." ON public.profiles FOR SELECT USING (auth.uid() = id OR (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin');
+  CREATE POLICY "Profiles are viewable by owner and admin." ON public.profiles FOR SELECT USING (auth.uid() = id OR public.is_admin());
   CREATE POLICY "Users can insert their own profile." ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
-  CREATE POLICY "Users can update own profile." ON public.profiles FOR UPDATE USING (auth.uid() = id OR (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin');
+  CREATE POLICY "Users can update own profile." ON public.profiles FOR UPDATE USING (auth.uid() = id OR public.is_admin());
 END $$;
 
 -- Meal Records
 DO $$ BEGIN
-  CREATE POLICY "Meal records viewable by owner and admin." ON public.meal_records FOR SELECT USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND (student_id = public.meal_records.student_id OR role = 'admin')));
-  CREATE POLICY "Admin can insert meal records." ON public.meal_records FOR INSERT WITH CHECK ((SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin');
+  CREATE POLICY "Meal records viewable by owner and admin." ON public.meal_records FOR SELECT USING (public.is_admin() OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND student_id = public.meal_records.student_id));
+  CREATE POLICY "Admin can insert meal records." ON public.meal_records FOR INSERT WITH CHECK (public.is_admin());
 END $$;
 
 -- Payments
 DO $$ BEGIN
-  CREATE POLICY "Payments viewable by owner and admin." ON public.payments FOR SELECT USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND (student_id = public.payments.student_id OR role = 'admin')));
-  CREATE POLICY "Admin can insert payments." ON public.payments FOR INSERT WITH CHECK ((SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin');
+  CREATE POLICY "Payments viewable by owner and admin." ON public.payments FOR SELECT USING (public.is_admin() OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND student_id = public.payments.student_id));
+  CREATE POLICY "Admin can insert payments." ON public.payments FOR INSERT WITH CHECK (public.is_admin());
 END $$;
 
 -- Notifications
