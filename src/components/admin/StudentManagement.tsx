@@ -9,6 +9,7 @@ import {
 import { QRCodeCanvas } from 'qrcode.react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-hot-toast';
+import * as api from '../../lib/api';
 
 interface StudentManagementProps {
   students: any[];
@@ -51,23 +52,17 @@ const StudentForm = ({
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const url = isEdit ? `/api/admin/students/${student.id}` : '/api/admin/students/add';
-      const method = isEdit ? 'PUT' : 'POST';
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast.success(isEdit ? 'Student profile updated' : 'Student registered successfully');
-        onClose();
-        onUpdate();
+      if (isEdit) {
+        await api.updateStudent(student.id, formData);
+        toast.success('Student profile updated');
       } else {
-        toast.error(data.message || 'Error saving student');
+        await api.signupUser(formData);
+        toast.success('Student registered successfully');
       }
-    } catch (err) {
-      toast.error('Error saving student');
+      onClose();
+      onUpdate();
+    } catch (err: any) {
+      toast.error(err.message || 'Error saving student');
     } finally {
       setIsSubmitting(false);
     }
@@ -284,35 +279,25 @@ const StudentManagement: React.FC<StudentManagementProps> = React.memo(({ studen
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: any) => {
     try {
-      const res = await fetch(`/api/admin/students/${id}`, { method: 'DELETE' });
-      const data = await res.json();
-      if (data.success) {
-        toast.success('Student deleted successfully');
-        onUpdate();
-        setShowDeleteConfirm(null);
-      }
-    } catch (err) {
-      toast.error('Error deleting student');
+      await api.deleteStudent(id);
+      toast.success('Student deleted successfully');
+      onUpdate();
+      setShowDeleteConfirm(null);
+    } catch (err: any) {
+      toast.error(err.message || 'Error deleting student');
     }
   };
 
   const handleToggleStatus = async (studentId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'Active' ? 'Blocked' : 'Active';
     try {
-      const res = await fetch('/api/admin/students/block-unblock', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ student_id: studentId, status: newStatus }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast.success(`Student ${newStatus === 'Active' ? 'unblocked' : 'blocked'} successfully`);
-        onUpdate();
-      }
-    } catch (err) {
-      toast.error('Error updating status');
+      await api.updateStudentStatus(studentId, newStatus);
+      toast.success(`Student ${newStatus === 'Active' ? 'unblocked' : 'blocked'} successfully`);
+      onUpdate();
+    } catch (err: any) {
+      toast.error(err.message || 'Error updating status');
     }
   };
 

@@ -8,7 +8,8 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-hot-toast';
-import { io } from 'socket.io-client';
+import * as api from '../lib/api';
+import { subscribeToMealScans, subscribeToPayments, broadcastMealScan } from '../lib/realtime';
 import { useTheme } from '../context/ThemeContext';
 import MenuLogs from './MenuLogs';
 
@@ -45,15 +46,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }) => {
 
   const fetchData = useCallback(async () => {
     try {
-      const [statsRes, studentsRes] = await Promise.all([
-        fetch('/api/admin/stats'),
-        fetch('/api/students')
+      const [stats, students] = await Promise.all([
+        api.getAdminStats(),
+        api.getAllStudents()
       ]);
-      const statsData = await statsRes.json();
-      const studentsData = await studentsRes.json();
       
-      setStats(statsData.success ? statsData.stats : (statsData || {}));
-      setStudents(Array.isArray(studentsData) ? studentsData : (studentsData.success ? studentsData.students : []));
+      setStats(stats);
+      setStudents(students || []);
     } catch (err) {
       console.error('Error fetching admin data:', err);
       setStudents([]);
@@ -65,35 +64,20 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }) => {
   }, [fetchData]);
 
   useEffect(() => {
-    const socket = io();
-    socket.on('student_registered', (data) => {
-      toast.success(`New student registered: ${data.full_name}`, {
-        icon: '👤',
-        style: {
-          borderRadius: '1rem',
-          background: '#1e293b',
-          color: '#fff',
-        },
-      });
-      fetchData();
-    });
-
-    socket.on('payment_received', (data) => {
+    // Subscription to payments for UI notification
+    const unsubPayments = subscribeToPayments((payload) => {
+      const { data } = payload;
       setLatestPayment(data);
       playSound('success');
       toast.success(`Payment of ₹${data.amount} received from ${data.full_name || data.student_id}`, {
         icon: '💰',
-        style: {
-          borderRadius: '1rem',
-          background: '#1e293b',
-          color: '#fff',
-        },
+        style: { borderRadius: '1rem', background: '#1e293b', color: '#fff' },
       });
       fetchData();
     });
 
     return () => {
-      socket.disconnect();
+      unsubPayments();
     };
   }, [fetchData]);
 
@@ -130,25 +114,51 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }) => {
   const handleScanSuccess = async (scannedData: string) => {
     setScanResult(null);
     try {
-      const response = await fetch('/api/admin/meal-scan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: scannedData }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        playSound('success');
-        setScanResult({ status: 'approve', reason: `Approved for ${data.meal}` });
-        fetchData();
-      } else {
-        playSound('error');
-        setScanResult({ status: 'deny', reason: data.message || data.detail?.message || 'Access Denied' });
+      let studentId = scannedData;
+      let mealType: string | null = null;
+
+      // Try to parse as QR token
+      try {
+        const decoded = JSON.parse(atob(scannedData));
+        if (decoded.student_id) {
+          studentId = decoded.student_id;
+          mealType = decoded.meal_type;
+        }
+      } catch (e) {
+        // Not a QR token, assume manual Student ID
       }
-    } catch (err) {
+
+      if (!mealType) {
+        const h = new Date().getHours();
+        mealType = (h < 11) ? 'Breakfast' : (h < 17) ? 'Lunch' : 'Dinner';
+      }
+
+      const result = await api.mealAccess(studentId, mealType!);
+      
+      playSound('success');
+      const msg = `Approved for ${mealType}`;
+      setScanResult({ status: 'approve', reason: msg });
+      
+      // Notify student in real-time
+      await broadcastMealScan({
+        student_id: studentId,
+        status: 'approve',
+        reason: msg
+      });
+      
+      fetchData();
+    } catch (err: any) {
       playSound('error');
-      setScanResult({ status: 'deny', reason: 'Scanner error. Please try again.' });
+      const msg = err.message || 'Access Denied';
+      setScanResult({ status: 'deny', reason: msg });
+      
+      // Notify student even if denied
+      await broadcastMealScan({
+        student_id: scannedData.includes('{') ? JSON.parse(atob(scannedData)).student_id : scannedData,
+        status: 'deny',
+        reason: msg
+      });
     }
-    // Auto-clear result after 4 seconds to allow next scan
     setTimeout(() => setScanResult(null), 4000);
   };
 

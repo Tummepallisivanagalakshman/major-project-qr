@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import * as api from '../../lib/api';
 import { 
   Home, Plus, Edit2, Trash2, 
   DoorOpen, DoorClosed, Users, 
@@ -23,9 +24,8 @@ const RoomManagement: React.FC<RoomManagementProps> = ({ onUpdate }) => {
 
   const fetchRooms = async () => {
     try {
-      const res = await fetch('/api/rooms');
-      const data = await res.json();
-      setRooms(Array.isArray(data) ? data : (data.success ? data.rooms : []));
+      const data = await api.getRooms();
+      setRooms(data || []);
     } catch (err) {
       toast.error('Failed to fetch rooms');
       setRooms([]);
@@ -36,17 +36,14 @@ const RoomManagement: React.FC<RoomManagementProps> = ({ onUpdate }) => {
     fetchRooms();
   }, []);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: any) => {
     try {
-      const res = await fetch(`/api/rooms/${id}`, { method: 'DELETE' });
-      const data = await res.json();
-      if (data.success) {
-        toast.success('Room deleted successfully');
-        fetchRooms();
-        setShowDeleteConfirm(null);
-      }
-    } catch (err) {
-      toast.error('Error deleting room');
+      await api.deleteRoom(id);
+      toast.success('Room deleted successfully');
+      fetchRooms();
+      setShowDeleteConfirm(null);
+    } catch (err: any) {
+      toast.error(err.message || 'Error deleting room');
     }
   };
 
@@ -63,25 +60,19 @@ const RoomManagement: React.FC<RoomManagementProps> = ({ onUpdate }) => {
       e.preventDefault();
       setIsSubmitting(true);
       try {
-        const url = isEdit ? `/api/rooms/${room.id}` : '/api/rooms';
-        const method = isEdit ? 'PUT' : 'POST';
-        const res = await fetch(url, {
-          method,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        });
-        const data = await res.json();
-        if (data.success) {
-          toast.success(isEdit ? 'Room updated' : 'Room added');
-          setShowAddModal(false);
-          setShowEditModal(false);
-          fetchRooms();
-          onUpdate();
+        if (isEdit) {
+          await api.updateRoom(room.id, formData);
+          toast.success('Room updated');
         } else {
-          toast.error(data.message || 'Error saving room');
+          await api.addRoom(formData);
+          toast.success('Room added');
         }
-      } catch (err) {
-        toast.error('Error saving room');
+        setShowAddModal(false);
+        setShowEditModal(false);
+        fetchRooms();
+        onUpdate();
+      } catch (err: any) {
+        toast.error(err.message || 'Error saving room');
       } finally {
         setIsSubmitting(false);
       }
@@ -184,9 +175,8 @@ const RoomManagement: React.FC<RoomManagementProps> = ({ onUpdate }) => {
     const fetchRoomStudents = async () => {
       if (room.occupancy > 0) {
         try {
-          const res = await fetch(`/api/rooms/${room.room_number}/students`);
-          const data = await res.json();
-          setRoomStudents(Array.isArray(data) ? data : (data.success ? data.students : []));
+          const data = await api.getRoomStudents(room.room_number);
+          setRoomStudents(data || []);
         } catch (err) {
           toast.error('Failed to fetch occupants');
           setRoomStudents([]);

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import * as api from '../../lib/api';
 import { 
   ShieldCheck, Plus, Edit2, Trash2, 
   CheckCircle, XCircle, AlertTriangle, 
@@ -24,9 +25,8 @@ const Rules: React.FC<RulesProps> = ({ isAdmin = false }) => {
 
   const fetchRules = async () => {
     try {
-      const res = await fetch('/api/rules');
-      const data = await res.json();
-      setRules(Array.isArray(data) ? data : (data.success ? data.rules || data.data || [] : []));
+      const data = await api.getRules();
+      setRules(data || []);
     } catch (err) {
       toast.error('Failed to fetch rules');
       setRules([]);
@@ -37,55 +37,38 @@ const Rules: React.FC<RulesProps> = ({ isAdmin = false }) => {
     fetchRules();
   }, []);
 
-  const handleUpdate = async (id: number) => {
+  const handleUpdate = async (id: any) => {
     try {
-      const res = await fetch(`/api/rules/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: editContent }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast.success('Rule updated successfully');
-        setEditingRule(null);
-        fetchRules();
-      }
-    } catch (err) {
-      toast.error('Error updating rule');
+      await api.updateRule(id, { content: editContent });
+      toast.success('Rule updated successfully');
+      setEditingRule(null);
+      fetchRules();
+    } catch (err: any) {
+      toast.error(err.message || 'Error updating rule');
     }
   };
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch('/api/rules', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newRule),
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast.success('New rule added');
-        setShowAddModal(false);
-        setNewRule({ category: 'Hostel', content: '' });
-        fetchRules();
-      }
-    } catch (err) {
-      toast.error('Error adding rule');
+      await api.addRule(newRule);
+      toast.success('New rule added');
+      setShowAddModal(false);
+      setNewRule({ category: 'Hostel', content: '' });
+      fetchRules();
+    } catch (err: any) {
+      toast.error(err.message || 'Error adding rule');
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: any) => {
     try {
-      const res = await fetch(`/api/rules/${id}`, { method: 'DELETE' });
-      const data = await res.json();
-      if (data.success) {
-        toast.success('Rule deleted');
-        fetchRules();
-        setShowDeleteConfirm(null);
-      }
-    } catch (err) {
-      toast.error('Error deleting rule');
+      await api.deleteRule(id);
+      toast.success('Rule deleted');
+      fetchRules();
+      setShowDeleteConfirm(null);
+    } catch (err: any) {
+      toast.error(err.message || 'Error deleting rule');
     }
   };
 

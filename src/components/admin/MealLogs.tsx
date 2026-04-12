@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import * as api from '../../lib/api';
 import { 
   ClipboardList, Search, Filter, 
   CheckCircle, XCircle, Clock, 
@@ -19,9 +20,8 @@ const MealLogs: React.FC<MealLogsProps> = React.memo(({ onUpdate }) => {
 
   const fetchLogs = React.useCallback(async () => {
     try {
-      const res = await fetch('/api/meal-logs');
-      const data = await res.json();
-      setLogs(Array.isArray(data) ? data : (data.success ? data.logs || data.data || [] : []));
+      const data = await api.getAllMealLogs();
+      setLogs(data || []);
     } catch (err) {
       console.error('Failed to fetch meal logs:', err);
       setLogs([]);

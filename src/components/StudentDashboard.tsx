@@ -16,7 +16,8 @@ import { useTheme } from '../context/ThemeContext';
 import MenuLogs from './MenuLogs';
 import Rules from './admin/Rules';
 import { toast } from 'react-hot-toast';
-import { io } from 'socket.io-client';
+import * as api from '../lib/api';
+import { subscribeToMealScans } from '../lib/realtime';
 
 interface StudentDashboardProps {
   user: any;
@@ -48,30 +49,19 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
 
   const fetchData = useCallback(async () => {
     try {
-      const [mealRes, payRes, notifRes, menuRes] = await Promise.all([
-        fetch(`/api/meal-logs/${user.student_id}`),
-        fetch(`/api/payments/${user.student_id}`),
-        fetch(`/api/notifications/${user.student_id}`),
-        fetch('/api/menu')
+      const [mealLogs, payments, notifications, menu] = await Promise.all([
+        api.getMealLogs(user.student_id),
+        api.getPayments(user.student_id),
+        api.getNotifications(user.student_id),
+        api.getMenu()
       ]);
       
-      const mealData = await mealRes.json();
-      setMealLogs(Array.isArray(mealData) ? mealData : (mealData.success ? mealData.mealLogs || mealData.data || [] : []));
-
-      const payData = await payRes.json();
-      setPayments(Array.isArray(payData) ? payData : (payData.success ? payData.payments || payData.data || [] : []));
-
-      const notifData = await notifRes.json();
-      setNotifications(Array.isArray(notifData) ? notifData : (notifData.success ? notifData.notifications || notifData.data || [] : []));
-
-      const menuData = await menuRes.json();
-      setMenu(Array.isArray(menuData) ? menuData : (menuData.success ? menuData.menu || menuData.data || [] : []));
+      setMealLogs(mealLogs || []);
+      setPayments(payments || []);
+      setNotifications(notifications || []);
+      setMenu(menu || []);
     } catch (err) {
       console.error("Error fetching data:", err);
-      setMealLogs([]);
-      setPayments([]);
-      setNotifications([]);
-      setMenu([]);
     }
   }, [user.student_id]);
 
@@ -85,8 +75,8 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
   }, [fetchData, user.full_name, user.email, user.phone]);
 
   useEffect(() => {
-    const socket = io('/');
-    socket.on('meal_scanned', (data: any) => {
+    const unsubscribe = subscribeToMealScans((payload) => {
+      const { data } = payload;
       if (data.student_id === user.student_id) {
         if (data.status === 'deny') {
           toast.error(data.reason, { duration: 8000, style: { background: '#fef2f2', color: '#991b1b', border: '1px solid #f87171' } });
@@ -96,7 +86,8 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
         }
       }
     });
-    return () => { socket.disconnect(); };
+
+    return () => { unsubscribe(); };
   }, [user.student_id, fetchData]);
 
   const downloadReceipt = (paymentId: string | number, amount: number, date: string) => {
@@ -153,28 +144,18 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
     setIsProcessingPayment(true);
     const loadingToast = toast.loading("Processing secure transaction...");
     try {
-      const res = await fetch('/api/payments/pay', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ student_id: user.student_id, amount, mode: 'UPI' })
-      });
-      const data = await res.json();
-      if (data.success) {
-        onUpdateUser(data.user);
-        toast.success('Transaction Successful!', { id: loadingToast });
-        
-        // Generate and download receipt
-        const today = new Date().toISOString().split('T')[0];
-        downloadReceipt(data.payment_id || Math.floor(Math.random() * 10000), amount, today);
-        
-        setShowPaymentModal(false);
-        setPaymentAmount('');
-        fetchData();
-      } else {
-        toast.error(data.message || 'Payment failed', { id: loadingToast });
-      }
-    } catch (err) {
-      toast.error('Payment gateway error', { id: loadingToast });
+      const data = await api.makePayment(user.student_id, amount, 'UPI');
+      onUpdateUser({ ...user, paid_amount: (user.paid_amount || 0) + amount });
+      toast.success('Transaction Successful!', { id: loadingToast });
+      
+      const today = new Date().toISOString().split('T')[0];
+      downloadReceipt(data.id || Math.floor(Math.random() * 10000), amount, today);
+      
+      setShowPaymentModal(false);
+      setPaymentAmount('');
+      fetchData();
+    } catch (err: any) {
+      toast.error(err.message || 'Payment gateway error', { id: loadingToast });
     } finally {
       setIsProcessingPayment(false);
     }
@@ -188,20 +169,11 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
     setIsUpdatingPassword(true);
     const loadingToast = toast.loading("Updating security credentials...");
     try {
-      const res = await fetch('/api/auth/change-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, oldPassword: passwordData.old, newPassword: passwordData.new })
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast.success('Credentials updated successfully!', { id: loadingToast });
-        setPasswordData({ old: '', new: '', confirm: '' });
-      } else {
-        toast.error(data.message, { id: loadingToast });
-      }
-    } catch (err) {
-      toast.error('Update failed', { id: loadingToast });
+      await api.changePassword(passwordData.old, passwordData.new);
+      toast.success('Credentials updated successfully!', { id: loadingToast });
+      setPasswordData({ old: '', new: '', confirm: '' });
+    } catch (err: any) {
+      toast.error(err.message || 'Update failed', { id: loadingToast });
     } finally {
       setIsUpdatingPassword(false);
     }
@@ -217,26 +189,14 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
       setIsUploadingPhoto(true);
       const loadingToast = toast.loading("Uploading biometric photo...");
       try {
-        const res = await fetch('/api/user/update-profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            userId: user.id, 
-            full_name: user.full_name, 
-            email: user.email, 
-            phone: user.phone, 
-            profile_photo: base64 
-          })
+        const updatedUser = await api.updateProfile({ 
+          userId: user.id, 
+          profile_photo: base64 
         });
-        const data = await res.json();
-        if (data.success) {
-          onUpdateUser(data.user);
-          toast.success('Biometric photo updated!', { id: loadingToast });
-        } else {
-          toast.error('Upload failed', { id: loadingToast });
-        }
-      } catch (err) {
-        toast.error('Network error during upload', { id: loadingToast });
+        onUpdateUser({ ...user, ...updatedUser });
+        toast.success('Biometric photo updated!', { id: loadingToast });
+      } catch (err: any) {
+        toast.error(err.message || 'Upload failed', { id: loadingToast });
       } finally {
         setIsUploadingPhoto(false);
       }
@@ -249,25 +209,15 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
     setIsUpdatingProfile(true);
     const loadingToast = toast.loading("Synchronizing profile data...");
     try {
-      const res = await fetch('/api/user/update-profile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          userId: user.id, 
-          ...editProfileData,
-          profile_photo: user.profile_photo 
-        })
+      const updatedUser = await api.updateProfile({ 
+        userId: user.id, 
+        ...editProfileData 
       });
-      const data = await res.json();
-      if (data.success) {
-        onUpdateUser(data.user);
-        toast.success('Profile synchronized successfully!', { id: loadingToast });
-        setShowEditProfileModal(false);
-      } else {
-        toast.error('Update failed', { id: loadingToast });
-      }
-    } catch (err) {
-      toast.error('Network error during update', { id: loadingToast });
+      onUpdateUser({ ...user, ...updatedUser });
+      toast.success('Profile synchronized successfully!', { id: loadingToast });
+      setShowEditProfileModal(false);
+    } catch (err: any) {
+      toast.error(err.message || 'Network error during update', { id: loadingToast });
     } finally {
       setIsUpdatingProfile(false);
     }

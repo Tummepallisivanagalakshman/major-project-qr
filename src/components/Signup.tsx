@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Building2, Lock, User, Mail, Phone, Hash, ArrowRight, AlertCircle, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { signupUser } from '../lib/api';
 
 const Signup: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -25,19 +26,10 @@ const Signup: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, student_id, full_name, email, phone }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        navigate('/login');
-      } else {
-        setError(data.message || 'Registration failed. Please verify your details.');
-      }
-    } catch (err) {
-      setError('Network synchronization failed. Please try again.');
+      await signupUser({ username, password, student_id, full_name, email, phone });
+      navigate('/login');
+    } catch (err: any) {
+      setError(err.message || 'Registration failed. Please verify your details.');
     } finally {
       setLoading(false);
     }

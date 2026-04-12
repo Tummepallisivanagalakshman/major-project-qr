@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import * as api from '../../lib/api';
 import { 
   Bell, Send, AlertTriangle, 
   Info, CreditCard, X, 
@@ -18,26 +19,19 @@ const Notifications: React.FC = () => {
     e.preventDefault();
     setIsSending(true);
     try {
-      const res = await fetch('/api/admin/notifications/broadcast', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, message, type }),
+      await api.broadcastNotification({ title, message, type });
+      toast.success('Announcement broadcasted successfully!', {
+        icon: '🚀',
+        style: {
+          borderRadius: '1rem',
+          background: '#1e293b',
+          color: '#fff',
+        },
       });
-      const data = await res.json();
-      if (data.success) {
-        toast.success('Announcement broadcasted successfully!', {
-          icon: '🚀',
-          style: {
-            borderRadius: '1rem',
-            background: '#1e293b',
-            color: '#fff',
-          },
-        });
-        setTitle('');
-        setMessage('');
-      }
-    } catch (err) {
-      toast.error('Error broadcasting announcement');
+      setTitle('');
+      setMessage('');
+    } catch (err: any) {
+      toast.error(err.message || 'Error broadcasting announcement');
     } finally {
       setIsSending(false);
     }

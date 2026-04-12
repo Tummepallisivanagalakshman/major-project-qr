@@ -7,6 +7,7 @@ import LandingPage from './components/LandingPage';
 import AdminDashboard from './components/AdminDashboard';
 import StudentDashboard from './components/StudentDashboard';
 import { ThemeProvider } from './context/ThemeContext';
+import { getMe, logoutUser } from './lib/api';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<any>(null);
@@ -15,10 +16,9 @@ const App: React.FC = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch('/api/auth/me');
-        const data = await res.json();
-        if (data.success) {
-          setUser(data.user);
+        const currentUser = await getMe();
+        if (currentUser) {
+          setUser(currentUser);
         }
       } catch (err) {
         console.error('Auth check failed');
@@ -31,7 +31,7 @@ const App: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
+      await logoutUser();
       setUser(null);
     } catch (err) {
       console.error('Logout failed');

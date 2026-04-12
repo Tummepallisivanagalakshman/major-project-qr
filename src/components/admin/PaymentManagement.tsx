@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { io } from 'socket.io-client';
+import * as api from '../../lib/api';
+import { subscribeToPayments } from '../../lib/realtime';
 import { 
   CreditCard, Search, Filter, Plus, 
   CheckCircle, XCircle, Clock, 
@@ -24,9 +25,8 @@ const PaymentManagement: React.FC<PaymentManagementProps> = React.memo(({ onUpda
 
   const fetchPayments = React.useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/payments');
-      const data = await res.json();
-      setPayments(Array.isArray(data) ? data : (data.success ? data.payments : []));
+      const data = await api.getAllPayments();
+      setPayments(data || []);
     } catch (err) {
       console.error("Error fetching payments:", err);
       setPayments([]);
@@ -36,14 +36,13 @@ const PaymentManagement: React.FC<PaymentManagementProps> = React.memo(({ onUpda
   useEffect(() => {
     fetchPayments();
     
-    const socket = io();
-    socket.on('payment_received', () => {
+    const unsub = subscribeToPayments(() => {
       fetchPayments();
       onUpdate();
     });
     
     return () => {
-      socket.disconnect();
+      unsub();
     };
   }, [fetchPayments, onUpdate]);
 
@@ -72,20 +71,13 @@ const PaymentManagement: React.FC<PaymentManagementProps> = React.memo(({ onUpda
       e.preventDefault();
       setIsSubmitting(true);
       try {
-        const res = await fetch('/api/admin/payments/add', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        });
-        const data = await res.json();
-        if (data.success) {
-          toast.success('Payment recorded successfully!');
-          setShowAddModal(false);
-          fetchPayments();
-          onUpdate();
-        }
-      } catch (err) {
-        toast.error('Error adding payment');
+        await api.makePayment(formData.student_id, formData.amount, formData.mode);
+        toast.success('Payment recorded successfully!');
+        setShowAddModal(false);
+        fetchPayments();
+        onUpdate();
+      } catch (err: any) {
+        toast.error(err.message || 'Error adding payment');
       } finally {
         setIsSubmitting(false);
       }

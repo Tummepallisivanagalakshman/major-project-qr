@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import * as api from '../lib/api';
 import { 
   Utensils, Coffee, Sun, Moon, 
   Clock, Edit2, Check, X, 
@@ -19,9 +20,8 @@ const MenuLogs: React.FC<MenuLogsProps> = ({ isAdmin = false }) => {
 
   const fetchMenu = async () => {
     try {
-      const res = await fetch('/api/menu');
-      const data = await res.json();
-      setMenu(Array.isArray(data) ? data : (data.success ? data.menu : []));
+      const data = await api.getMenu();
+      setMenu(data || []);
     } catch (err) {
       console.error("Error fetching menu:", err);
       toast.error("Failed to synchronize menu data.");
@@ -43,21 +43,13 @@ const MenuLogs: React.FC<MenuLogsProps> = ({ isAdmin = false }) => {
   const handleSave = async () => {
     if (!editData) return;
     try {
-      const res = await fetch(`/api/menu/${editData.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editData),
-      });
-      if (res.ok) {
-        setEditingId(null);
-        toast.success("Menu updated successfully.");
-        fetchMenu();
-      } else {
-        toast.error("Failed to update menu.");
-      }
-    } catch (err) {
+      await api.updateMenu(editData.id, editData);
+      setEditingId(null);
+      toast.success("Menu updated successfully.");
+      fetchMenu();
+    } catch (err: any) {
       console.error("Error saving menu:", err);
-      toast.error("Network error during save.");
+      toast.error(err.message || "Network error during save.");
     }
   };
 

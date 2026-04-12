@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import * as api from '../../lib/api';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, 
   Tooltip, ResponsiveContainer, LineChart, Line,
@@ -17,15 +18,13 @@ const Reports: React.FC = () => {
 
   const fetchReports = async () => {
     try {
-      const [mealRes, revRes] = await Promise.all([
-        fetch('/api/admin/reports/meals'),
-        fetch('/api/admin/reports/revenue')
+      const [mealData, revData] = await Promise.all([
+        api.getMealStats(),
+        api.getRevenueStats()
       ]);
-      const mealData = await mealRes.json();
-      const revData = await revRes.json();
       
-      setMealStats(Array.isArray(mealData) ? mealData : (mealData.success ? mealData.data || mealData.meals || [] : []));
-      setRevenueStats(Array.isArray(revData) ? revData : (revData.success ? revData.data || revData.revenue || [] : []));
+      setMealStats(mealData || []);
+      setRevenueStats(revData || []);
     } catch (err) {
       console.error('Failed to fetch reports:', err);
       setMealStats([]);

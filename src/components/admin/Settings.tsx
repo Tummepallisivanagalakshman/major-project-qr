@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import * as api from '../../lib/api';
 import { 
   User, Lock, Shield, Settings as SettingsIcon,
   CheckCircle, XCircle, AlertTriangle, 
@@ -27,22 +28,13 @@ const Settings: React.FC<SettingsProps> = ({ user, onLogout }) => {
     }
     setIsUpdating(true);
     try {
-      const res = await fetch('/api/auth/change-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, oldPassword, newPassword }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast.success('Password updated successfully!');
-        setOldPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-      } else {
-        toast.error(data.message || 'Failed to update password');
-      }
-    } catch (err) {
-      toast.error('Error updating password');
+      await api.changePassword(oldPassword, newPassword);
+      toast.success('Password updated successfully!');
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err: any) {
+      toast.error(err.message || 'Error updating password');
     } finally {
       setIsUpdating(false);
     }

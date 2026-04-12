@@ -1,36 +1,26 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Building2, Lock, User, ArrowRight, AlertCircle, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Mail } from 'lucide-react';
+import { loginUser } from '../lib/api';
 
 interface LoginProps {
   onLogin: (user: any) => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        onLogin(data.user);
-      } else {
-        setError(data.message || 'Authentication failed. Please check your credentials.');
-      }
-    } catch (err) {
-      setError('Network synchronization failed. Please try again.');
+      const user = await loginUser(email, password);
+      onLogin(user);
+    } catch (err: any) {
+      setError(err.message || 'Authentication failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
@@ -108,19 +98,19 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
             <div className="space-y-3">
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                <User size={12} className="text-violet-500" />
-                Administrative Identity
+                <Mail size={12} className="text-violet-500" />
+                Network Identity (Email)
               </label>
               <div className="relative group">
                 <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-violet-500 transition-colors">
-                  <User size={20} />
+                  <Mail size={20} />
                 </div>
                 <input
-                  type="text"
+                  type="email"
                   className="w-full pl-16 pr-6 py-5 bg-slate-50/50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-[1.5rem] focus:outline-none focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all dark:text-white font-bold placeholder:text-slate-400 dark:placeholder:text-slate-600"
-                  placeholder="Username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Email Address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
