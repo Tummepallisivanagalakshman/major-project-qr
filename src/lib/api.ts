@@ -235,6 +235,14 @@ export const getMenu = async () => {
 };
 
 export const updateMenu = async (id: string | number, menuData: any) => {
+  // If id is a string (day name), upsert for auto-initialization
+  if (typeof id === 'string' && isNaN(Number(id))) {
+    const { error } = await insforge.database
+      .from('menu')
+      .upsert(menuData, { onConflict: 'day' });
+    if (error) throw error;
+    return { success: true };
+  }
   const { error } = await insforge.database
     .from('menu')
     .update(menuData)

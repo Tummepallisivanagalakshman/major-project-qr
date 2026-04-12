@@ -20,7 +20,29 @@ const MenuLogs: React.FC<MenuLogsProps> = ({ isAdmin = false }) => {
 
   const fetchMenu = async () => {
     try {
-      const data = await api.getMenu();
+      let data = await api.getMenu();
+      
+      // Auto-initialize the menu if the database is physically empty!
+      if (!data || data.length === 0) {
+        if (isAdmin) {
+          toast.loading("Initializing fresh menu structure...", { id: 'menuInit' });
+          const defaultMenu = [
+            { day: 'Monday', breakfast: 'Idli, Sambar', lunch: 'Rice, Dal', snacks: 'Tea', dinner: 'Chapati, Curry' },
+            { day: 'Tuesday', breakfast: 'Poha', lunch: 'Rice, Salad', snacks: 'Coffee', dinner: 'Dal Tadka' },
+            { day: 'Wednesday', breakfast: 'Aloo Paratha', lunch: 'Chole, Puri', snacks: 'Tea', dinner: 'Mixed Veg' },
+            { day: 'Thursday', breakfast: 'Upma', lunch: 'Dal Makhani', snacks: 'Milk', dinner: 'Paneer' },
+            { day: 'Friday', breakfast: 'Dosa', lunch: 'Fish / Veg Korma', snacks: 'Pakora', dinner: 'Aloo Gobi' },
+            { day: 'Saturday', breakfast: 'Puri, Sabji', lunch: 'Veg Biryani', snacks: 'Puffs', dinner: 'Dal Fry' },
+            { day: 'Sunday', breakfast: 'Chole Bhature', lunch: 'Chicken / Veg Pulao', snacks: 'Bread Pakora', dinner: 'Egg / Mix Veg' }
+          ];
+          for (let m of defaultMenu) {
+             // We do a stealth update; api.ts doesn't have createMenu so we just simulate or force it
+             await api.updateMenu(m.day as any, m); 
+          }
+          data = await api.getMenu();
+          toast.success("Menu framework constructed!", { id: 'menuInit' });
+        }
+      }
       setMenu(data || []);
     } catch (err) {
       console.error("Error fetching menu:", err);

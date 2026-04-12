@@ -121,4 +121,6 @@ DO $$ BEGIN
   CREATE POLICY "Rooms viewable by authenticated." ON public.rooms FOR SELECT USING (auth.role() = 'authenticated');
   CREATE POLICY "Rules viewable by authenticated." ON public.rules FOR SELECT USING (auth.role() = 'authenticated');
   CREATE POLICY "Menu viewable by authenticated." ON public.menu FOR SELECT USING (auth.role() = 'authenticated');
+  CREATE POLICY "Menu updateable by admin." ON public.menu FOR UPDATE USING (public.is_admin());
+  CREATE POLICY "Menu insertable by admin." ON public.menu FOR INSERT WITH CHECK (public.is_admin());
 END $$;
