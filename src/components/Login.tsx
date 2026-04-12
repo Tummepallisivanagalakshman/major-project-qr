@@ -9,15 +9,16 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('admin');
+  const [password, setPassword] = useState('admin@123');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const user = await loginUser(email, password);
+      const loginEmail = email === 'admin' ? 'admin@insforge.com' : email;
+      const user = await loginUser(loginEmail, password);
       onLogin(user);
     } catch (err: any) {
       setError(err.message || 'Authentication failed. Please check your credentials.');
@@ -106,9 +107,9 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                   <Mail size={20} />
                 </div>
                 <input
-                  type="email"
+                  type="text"
                   className="w-full pl-16 pr-6 py-5 bg-slate-50/50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-[1.5rem] focus:outline-none focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all dark:text-white font-bold placeholder:text-slate-400 dark:placeholder:text-slate-600"
-                  placeholder="Email Address"
+                  placeholder="Network ID or Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
