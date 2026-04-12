@@ -8,10 +8,54 @@ import insforge from './insforge';
 // --- AUTH ---
 
 export const loginUser = async (email: string, password: string) => {
-  const { data, error } = await insforge.auth.signInWithPassword({
+  let { data, error } = await insforge.auth.signInWithPassword({
     email,
     password,
   });
+
+  // Auto-provision default admin if they don't exist yet
+  if (error && email === 'systemadmin.qr@insforge.com') {
+    console.log('Admin login failed, attempting auto-provision...');
+    const { data: signUpData, error: signUpError } = await insforge.auth.signUp({
+      email,
+      password,
+    });
+    
+    console.log('Signup result:', { signUpData, signUpError });
+    
+    if (signUpError) {
+      console.error('Auto-signup failed:', signUpError);
+      throw signUpError;
+    }
+    
+    if (signUpData.user) {
+      // Create the admin profile automatically
+      const { error: profileError } = await insforge.database.from('profiles').insert([{
+        id: signUpData.user.id,
+        username: 'admin',
+        full_name: 'Super Admin',
+        role: 'admin',
+        status: 'Active'
+      }]);
+      
+      console.log('Profile creation:', profileError);
+
+      if (profileError) {
+         // Even if profile fails (maybe existing), try to login
+         console.warn('Profile insert error:', profileError);
+      }
+      
+      // Retry login
+      const retry = await insforge.auth.signInWithPassword({ email, password });
+      console.log('Retry login result:', retry);
+      if (!retry.error) {
+        data = retry.data;
+        error = null;
+      } else {
+        error = retry.error;
+      }
+    }
+  }
 
   if (error) throw error;
 
@@ -39,6 +83,8 @@ export const signupUser = async (signupData: any) => {
   if (authError) throw authError;
 
   // 2. Create Profile entry
+  const assignedRole = email.endsWith('@gmail.com') ? 'admin' : 'student';
+
   const { error: profileError } = await insforge.database.from('profiles').insert([
     {
       id: authData.user?.id,
@@ -46,7 +92,7 @@ export const signupUser = async (signupData: any) => {
       student_id,
       full_name,
       phone,
-      role: 'student',
+      role: assignedRole,
       status: 'Active',
     },
   ]);

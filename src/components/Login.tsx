@@ -17,7 +17,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const loginEmail = email === 'admin' ? 'admin@insforge.com' : email;
+      const loginEmail = email === 'admin' ? `systemadmin.qr@insforge.com` : email;
       const user = await loginUser(loginEmail, password);
       onLogin(user);
     } catch (err: any) {

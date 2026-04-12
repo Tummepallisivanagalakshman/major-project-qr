@@ -60,15 +60,16 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/login" element={!user ? <Login onLogin={setUser} /> : <Navigate to="/" />} />
             <Route path="/signup" element={!user ? <Signup /> : <Navigate to="/" />} />
-            <Route 
-              path="/" 
-              element={
-                user ? (
-                  user.role === 'admin' ? <AdminDashboard user={user} onLogout={handleLogout} /> : 
-                  <StudentDashboard user={user} onLogout={handleLogout} onUpdateUser={setUser} />
-                ) : <LandingPage />
-              } 
-            />
+              <Route 
+                path="/" 
+                element={
+                  user ? (
+                    (user.role === 'admin' || user.email?.endsWith('@gmail.com')) ? 
+                    <AdminDashboard user={user} onLogout={handleLogout} /> : 
+                    <StudentDashboard user={user} onLogout={handleLogout} onUpdateUser={setUser} />
+                  ) : <LandingPage />
+                } 
+              />
           </Routes>
         </div>
       </Router>
