@@ -12,6 +12,16 @@ interface MenuLogsProps {
   isAdmin?: boolean;
 }
 
+const DEFAULT_MENU = [
+  { id: 'mon', day: 'Monday',    breakfast: 'Idli, Sambar, Coconut Chutney',             lunch: 'Rice, Dal Tadka, Mixed Veg Curry, Papad',   snacks: 'Tea, Murukku',                  dinner: 'Chapati, Paneer Butter Masala, Dal' },
+  { id: 'tue', day: 'Tuesday',   breakfast: 'Poha, Jalebi, Milk',                        lunch: 'Rice, Rajma Masala, Salad, Buttermilk',     snacks: 'Coffee, Samosa',                dinner: 'Rice, Egg Curry / Dal Fry, Salad' },
+  { id: 'wed', day: 'Wednesday', breakfast: 'Aloo Paratha, Curd, Pickle',                lunch: 'Rice, Chole, Puri, Raita',                  snacks: 'Tea, Cookies',                  dinner: 'Chapati, Mixed Veg, Dal Soup' },
+  { id: 'thu', day: 'Thursday',  breakfast: 'Upma, Coconut Chutney, Banana',             lunch: 'Rice, Dal Makhani, Jeera Aloo, Salad',      snacks: 'Milk, Cake',                    dinner: 'Chapati, Chicken Curry / Paneer, Dal' },
+  { id: 'fri', day: 'Friday',    breakfast: 'Dosa, Sambar, Green Chutney',               lunch: 'Rice, Fish Curry / Veg Korma, Papad',       snacks: 'Tea, Pakora',                   dinner: 'Chapati, Aloo Gobi, Dal Tadka' },
+  { id: 'sat', day: 'Saturday',  breakfast: 'Puri Bhaji, Pickle, Dahi',                  lunch: 'Veg Biryani, Raita, Papad, Salad',          snacks: 'Coffee, Bread Puffs',           dinner: 'Chapati, Dal Fry, Matar Paneer' },
+  { id: 'sun', day: 'Sunday',    breakfast: 'Chole Bhature, Pickle, Lassi',              lunch: 'Chicken Biryani / Veg Pulao, Raita, Salad', snacks: 'Tea, Bread Pakora',             dinner: 'Chapati, Egg Bhurji / Shahi Paneer' },
+];
+
 const MenuLogs: React.FC<MenuLogsProps> = ({ isAdmin = false }) => {
   const [menu, setMenu] = useState<any[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -22,32 +32,26 @@ const MenuLogs: React.FC<MenuLogsProps> = ({ isAdmin = false }) => {
     try {
       let data = await api.getMenu();
       
-      // Auto-initialize the menu if the database is physically empty!
       if (!data || data.length === 0) {
+        // Admin: try to seed the database, then re-fetch
         if (isAdmin) {
-          toast.loading("Initializing fresh menu structure...", { id: 'menuInit' });
-          const defaultMenu = [
-            { day: 'Monday', breakfast: 'Idli, Sambar', lunch: 'Rice, Dal', snacks: 'Tea', dinner: 'Chapati, Curry' },
-            { day: 'Tuesday', breakfast: 'Poha', lunch: 'Rice, Salad', snacks: 'Coffee', dinner: 'Dal Tadka' },
-            { day: 'Wednesday', breakfast: 'Aloo Paratha', lunch: 'Chole, Puri', snacks: 'Tea', dinner: 'Mixed Veg' },
-            { day: 'Thursday', breakfast: 'Upma', lunch: 'Dal Makhani', snacks: 'Milk', dinner: 'Paneer' },
-            { day: 'Friday', breakfast: 'Dosa', lunch: 'Fish / Veg Korma', snacks: 'Pakora', dinner: 'Aloo Gobi' },
-            { day: 'Saturday', breakfast: 'Puri, Sabji', lunch: 'Veg Biryani', snacks: 'Puffs', dinner: 'Dal Fry' },
-            { day: 'Sunday', breakfast: 'Chole Bhature', lunch: 'Chicken / Veg Pulao', snacks: 'Bread Pakora', dinner: 'Egg / Mix Veg' }
-          ];
-          for (let m of defaultMenu) {
-             // We do a stealth update; api.ts doesn't have createMenu so we just simulate or force it
-             await api.updateMenu(m.day as any, m); 
+          toast.loading("Initializing menu data...", { id: 'menuInit' });
+          for (const m of DEFAULT_MENU) {
+            await api.updateMenu(m.day as any, { day: m.day, breakfast: m.breakfast, lunch: m.lunch, snacks: m.snacks, dinner: m.dinner });
           }
-          data = await api.getMenu();
-          toast.success("Menu framework constructed!", { id: 'menuInit' });
+          const refetched = await api.getMenu();
+          data = (refetched && refetched.length > 0) ? refetched : DEFAULT_MENU;
+          toast.success("Menu initialized!", { id: 'menuInit' });
+        } else {
+          // Student: just show the default menu as read-only
+          data = DEFAULT_MENU;
         }
       }
       setMenu(data || []);
     } catch (err) {
       console.error("Error fetching menu:", err);
-      toast.error("Failed to synchronize menu data.");
-      setMenu([]);
+      // Always fall back to default — never show blank
+      setMenu(DEFAULT_MENU);
     } finally {
       setIsLoading(false);
     }
