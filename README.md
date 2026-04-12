@@ -1,103 +1,92 @@
-# 🏫 Full-Stack QR Meal Access & Hostel Management System
+# 🏫 Elite Hostel QR Management System (InsForge Edition)
 
-## 📌 Overview
-This project is an automated, Full-Stack QR Code–based Meal Access and Hostel Management System. It replaces manual logs by providing students with a fully automated dashboard to generate secure, time-sensitive QR codes for meal access. Administrators can instantly scan these QR codes to verify a student's meal eligibility, strict fee payment status, and block access to unauthorized or unpaid users in real-time.
+## 📌 Dashboard Overview
+The Elite Hostel Management System is a premium, cloud-native solution for automated student residence administration. Originally built on a legacy Python/SQLite stack, the platform has been migrated to **InsForge**, leveraging high-performance PostgreSQL, secure Auth providers, and real-time WebSocket channels.
+
+This system provides a frictionless "Generate-and-Scan" workflow for meal access, integrated financial tracking, and comprehensive residence management.
 
 ---
 
 ## 🚀 Key Features
 
-### For Students:
-* **Interactive Dashboard:** View meal logs, fee dues, room details, and notifications.
-* **Dynamic QR Code Generation:** Generates a secure, time-sensitive (1-minute expiry) QR code for current meal times (Breakfast, Lunch, Dinner).
-* **Profile Management:** Update contact information securely.
-* **Payment Logs & Notifications:** Track previous payments and receive admin notifications.
+### 🎓 For Students
+- **Dynamic QR Authorization:** Generates secure, meal-specific QR codes with 10-second refresh intervals to prevent spoofing.
+- **Financial Status:** Real-time tracking of fee payments, outstanding dues, and digital receipts (PDF).
+- **Culinary Sync:** View the weekly mess menu synchronized in real-time.
+- **Personalized Alerts:** Receive broadcast and targeted notifications regarding payments and hostel events.
 
-### For Administrators:
-* **Real-time QR Scanning:** Web-based QR scanner using laptop/mobile cameras. Connects via real-time WebSockets (`Socket.IO`).
-* **Strict Verification:** Rejects scanning if the QR code is expired, the user has unpaid fees, the account is blocked, or the student already accessed the current meal.
-* **Extensive Dashboards:** Monitor live capacity, total payments, and meal counts.
-* **Full Management Suite:** Manage Rooms, Menus, Rules, Payments, and broadcast Notifications.
-
----
-
-## 🛠️ Technologies Used
-
-### Frontend (Client)
-* **React 18** (Vite)
-* **Tailwind CSS** (for styling)
-* **React Router Dom** (for navigation)
-* **Socket.io-client** (for real-time admin scan notifications)
-* **qrcode.react** & **html5-qrcode** (for QR generation & scanning)
-* **Recharts** (for admin analytics)
-
-### Backend (Server)
-* **FastAPI** (Python web framework)
-* **SQLite3** (Lightweight relation database)
-* **python-socketio** (ASGI mode for real-time WebSocket communication)
-* **PyJWT & bcrypt** (Authentication & password hashing)
-* **Uvicorn** (ASGI server)
+### 🛡️ For Administrators
+- **Intelligent Scanning Lens:** AI-ready scanner that validates fee status, meal eligibility, and account standing in milliseconds.
+- **Admin Command Center:** Unified dashboard for monitoring occupancy, revenue, and daily meal distribution metrics.
+- **Granular Management:** Dedicated modules for Students, Rooms, Payments, Notifications, Rules, and Reports.
+- **Real-time Event Stream:** Instant UI update on successful payments or scanned arrivals.
 
 ---
 
-## ⚙️ How It Works (QR Access Flow)
-
-1. A student logs into their dashboard and clicks **"Generate QR Code"**.
-2. The system checks the current server time and creates a securely encoded QR payload restricted to the current meal (e.g., *Lunch*).
-3. The Admin uses the dedicated Scanner page. When the QR is scanned, the data is pushed securely to the API.
-4. The Backend checks:
-   - Is the QR code < 60 seconds old?
-   - Are the student's fees fully paid?
-   - Is their account marked 'Active'?
-   - Have they already claimed this meal today?
-5. The Admin receives real-time validation via WebSockets (**Approved** / **Denied** with precise reasons).
+## 🛠️ Technology Stack
+- **Frontend:** React 18 (Vite) + TypeScript + Tailwind CSS
+- **Design System:** Rich aesthetics with Framer Motion, Lucide Icons, and Glassmorphism effects.
+- **Backend-as-a-Service:** InsForge (PostgreSQL Database, Auth, Realtime)
+- **Communications:** Real-time subscriptions via InsForge Channels (replacing Socket.IO)
 
 ---
 
-## ▶️ Setup and Installation
+## 📂 Project Structure & File Details
 
-### Method 1: Using Docker (Recommended)
+### 🏗️ Root Configuration
+- [`schema.sql`](./schema.sql): The foundational database blueprint. Contains the SQL definitions for `profiles`, `meal_records`, `payments`, `rooms`, `rules`, `menu`, and `notifications`.
+- [`.env`](./.env): Secure configuration for `VITE_INSFORGE_URL` and `VITE_INSFORGE_ANON_KEY`.
+- [`package.json`](./package.json): Project dependencies and Vite scripts.
 
-1. Clone the repository.
-   ```bash
-   git clone https://github.com/Tummepallisivanagalakshman/major-project-qr.git
-   cd major-project-qr
-   ```
+### ⚙️ Core Logic (`src/lib/`)
+- [`insforge.ts`](./src/lib/insforge.ts): Initializes the singleton InsForge client used across the entire application.
+- [`api.ts`](./src/lib/api.ts): **The Brain of the Application.** Contains all SDK wrappers for Students and Admins, including fee validation logic, meal access checks, and financial aggregation.
+- [`realtime.ts`](./src/lib/realtime.ts): Manages all real-time event subscriptions (broadcasts, payment alerts, and meal scan updates).
 
-2. Start the services using Docker Compose:
-   ```bash
-   docker-compose up --build
-   ```
+### 🖥️ User Interfaces (`src/components/`)
+- [`App.tsx`](./src/App.tsx): Root router and global Authentication provider integration.
+- [`AdminDashboard.tsx`](./src/components/AdminDashboard.tsx): High-level admin layout with contextually aware sidebar and scanner modal.
+- [`StudentDashboard.tsx`](./src/components/StudentDashboard.tsx): Feature-rich student portal with QR generator and payment gateway simulation.
+- [`Login.tsx`](./src/components/Login.tsx) & [`Signup.tsx`](./src/components/Signup.tsx): Specialized Auth views using InsForge Identity management.
+- [`MenuLogs.tsx`](./src/components/MenuLogs.tsx): Shared component for viewing/editing the weekly mess schedule.
+- [`QRScanner.tsx`](./src/components/QRScanner.tsx): Secure camera interface for administrative verification.
 
-3. Access the Application:
-   * **Frontend:** `http://localhost:80`
-   * **Backend API:** `http://localhost:8000`
+### 📊 Admin Modules (`src/components/admin/`)
+- `Overview.tsx`: Visual analytics dashboard.
+- `StudentManagement.tsx`: Full CRUD operations for resident profiles.
+- `RoomManagement.tsx`: Dynamic occupancy and vacancy tracking.
+- `PaymentManagement.tsx`: Ledger of all transactions with real-time sync.
+- `MealLogs.tsx`: Audit trail of all meal sessions.
+- `Reports.tsx`: Historical data visualization and revenue trends.
+- `Notifications.tsx`: System-wide announcement broadcast tool.
+- `Rules.tsx`: Policy management and distribution.
+- `Settings.tsx`: Admin profile and security protocol management.
 
-### Method 2: Manual Local Setup
+---
 
-**1. Setup Backend:**
+## ⚙️ Installation & Setup
+
+### 1. Prerequisite: InsForge Setup
+1. Create a project at [InsForge](https://insforge.com).
+2. Use the `Database` tab to run the contents of [`schema.sql`](./schema.sql).
+3. Copy your project URL and Anon Key.
+
+### 2. Local Environment
 ```bash
+# Clone the repository
 git clone https://github.com/Tummepallisivanagalakshman/major-project-qr.git
 cd major-project-qr
 
-# Install Python dependencies
-pip install -r requirements.txt
-
-# Start FastAPI server
-python main.py
-```
-*(The backend runs on `http://localhost:8000`)*
-
-**2. Setup Frontend:**
-Open a new terminal window:
-```bash
-# Install Node dependencies
+# Install dependencies
 npm install
 
-# Start the Vite development frontend
+# Configure environment
+cp .env.example .env
+# Edit .env with your InsForge credentials
+
+# Start Development Server
 npm run dev
 ```
-*(The frontend runs on `http://localhost:5173`)*
 
 ---
 
@@ -105,5 +94,5 @@ npm run dev
 
 **Tummepalli Sivanagalakshman**
 
-* GitHub: https://github.com/Tummepallisivanagalakshman
-* LinkedIn: https://www.linkedin.com/in/tummepalli-sivanagalakshman-a3100224b/
+* GitHub: [@Tummepallisivanagalakshman](https://github.com/Tummepallisivanagalakshman)
+* LinkedIn: [Siva Nagalakshman](https://www.linkedin.com/in/tummepalli-sivanagalakshman-a3100224b/)
