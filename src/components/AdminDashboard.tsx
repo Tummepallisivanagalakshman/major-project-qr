@@ -34,10 +34,27 @@ type AdminTab = 'dashboard' | 'students' | 'rooms' | 'payments' | 'logs' | 'repo
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }) => {
   const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
-  const [stats, setStats] = useState<any>({});
+  const [stats, setStats] = useState<any>({
+    students: { total: 0, active: 0, blocked: 0 },
+    payments: { total_received: 0, pending: 0 },
+    rooms: { total: 0, occupied: 0, available: 0 },
+    today_meals: { Breakfast: 0, Lunch: 0, Dinner: 0 }
+  });
   const [students, setStudents] = useState<any[]>([]);
   const [showScanner, setShowScanner] = useState(false);
-  const [scanResult, setScanResult] = useState<{ status: 'approve' | 'deny'; reason: string } | null>(null);
+  const [scanResult, setScanResult] = useState<{
+    status: 'approve' | 'deny';
+    reason: string;
+    studentProfile?: {
+      full_name?: string;
+      student_id?: string;
+      room_number?: string;
+      phone?: string;
+      paid_amount?: number;
+      total_fees?: number;
+      status?: string;
+    };
+  } | null>(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -113,54 +130,54 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }) => {
 
   const handleScanSuccess = async (scannedData: string) => {
     setScanResult(null);
+    let studentId = scannedData;
+    let mealType: string | null = null;
+
+    // Try to parse as base64-encoded QR token
     try {
-      let studentId = scannedData;
-      let mealType: string | null = null;
-
-      // Try to parse as QR token
-      try {
-        const decoded = JSON.parse(atob(scannedData));
-        if (decoded.student_id) {
-          studentId = decoded.student_id;
-          mealType = decoded.meal_type;
-        }
-      } catch (e) {
-        // Not a QR token, assume manual Student ID
+      const decoded = JSON.parse(atob(scannedData));
+      if (decoded.student_id) {
+        studentId = decoded.student_id;
+        mealType = decoded.meal_type;
       }
+    } catch (e) {
+      // Not a QR token, assume raw student ID
+    }
 
-      if (!mealType) {
-        const h = new Date().getHours();
-        mealType = (h < 11) ? 'Breakfast' : (h < 17) ? 'Lunch' : 'Dinner';
-      }
+    if (!mealType) {
+      const h = new Date().getHours();
+      mealType = (h < 11) ? 'Breakfast' : (h < 17) ? 'Lunch' : 'Dinner';
+    }
 
-      const result = await api.mealAccess(studentId, mealType!);
-      
+    // Fetch student profile for display
+    let studentProfile: any = null;
+    try {
+      const allStudents = await api.getAllStudents();
+      studentProfile = allStudents.find(
+        (s: any) => s.student_id === studentId || s.id === studentId
+      ) || null;
+    } catch (_) {}
+
+    try {
+      await api.mealAccess(studentId, mealType!);
       playSound('success');
-      const msg = `Approved for ${mealType}`;
-      setScanResult({ status: 'approve', reason: msg });
-      
-      // Notify student in real-time
-      await broadcastMealScan({
-        student_id: studentId,
-        status: 'approve',
-        reason: msg
-      });
-      
+      const msg = `Access Granted — ${mealType}`;
+      setScanResult({ status: 'approve', reason: msg, studentProfile });
+
+      await broadcastMealScan({ student_id: studentId, status: 'approve', reason: msg });
       fetchData();
     } catch (err: any) {
       playSound('error');
       const msg = err.message || 'Access Denied';
-      setScanResult({ status: 'deny', reason: msg });
-      
-      // Notify student even if denied
-      await broadcastMealScan({
-        student_id: scannedData.includes('{') ? JSON.parse(atob(scannedData)).student_id : scannedData,
-        status: 'deny',
-        reason: msg
-      });
+      setScanResult({ status: 'deny', reason: msg, studentProfile });
+
+      try {
+        await broadcastMealScan({ student_id: studentId, status: 'deny', reason: msg });
+      } catch (_) {}
     }
-    setTimeout(() => setScanResult(null), 4000);
+    setTimeout(() => setScanResult(null), 6000);
   };
+
 
   const [manualId, setManualId] = useState('');
   const handleManualSubmit = (e: React.FormEvent) => {
@@ -425,20 +442,69 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }) => {
                         initial={{ opacity: 0, scale: 0.85 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.85 }}
-                        className={`absolute inset-0 flex flex-col items-center justify-center rounded-[2rem] z-20 ${
+                        id="scan-result-overlay"
+                        className={`absolute inset-0 flex flex-col items-center justify-start rounded-[2rem] z-20 overflow-y-auto p-6 ${
                           scanResult.status === 'approve'
-                            ? 'bg-emerald-500/95'
-                            : 'bg-rose-500/95'
+                            ? 'bg-emerald-600/97'
+                            : 'bg-rose-600/97'
                         }`}
                       >
-                        <div className="text-6xl mb-4">{scanResult.status === 'approve' ? '✅' : '❌'}</div>
-                        <p className="text-white font-black text-2xl uppercase tracking-widest mb-2">
-                          {scanResult.status === 'approve' ? 'APPROVED' : 'DENIED'}
+                        <div className="text-5xl mb-2 mt-2">{scanResult.status === 'approve' ? '✅' : '❌'}</div>
+                        <p className="text-white font-black text-xl uppercase tracking-widest mb-1">
+                          {scanResult.status === 'approve' ? 'ACCESS GRANTED' : 'ACCESS DENIED'}
                         </p>
-                        <p className="text-white/80 font-bold text-sm text-center px-6">{scanResult.reason}</p>
+                        <p className="text-white/80 font-bold text-xs text-center mb-4">{scanResult.reason}</p>
+
+                        {scanResult.studentProfile && (
+                          <div className="w-full bg-white/15 backdrop-blur-sm rounded-2xl p-4 space-y-2 text-left border border-white/20">
+                            {scanResult.studentProfile.full_name && (
+                              <div className="flex justify-between items-center">
+                                <span className="text-white/60 text-[10px] font-black uppercase tracking-wider">Name</span>
+                                <span className="text-white font-black text-xs">{scanResult.studentProfile.full_name}</span>
+                              </div>
+                            )}
+                            {scanResult.studentProfile.student_id && (
+                              <div className="flex justify-between items-center">
+                                <span className="text-white/60 text-[10px] font-black uppercase tracking-wider">Student ID</span>
+                                <span className="text-white font-bold text-xs">{scanResult.studentProfile.student_id}</span>
+                              </div>
+                            )}
+                            {scanResult.studentProfile.room_number && (
+                              <div className="flex justify-between items-center">
+                                <span className="text-white/60 text-[10px] font-black uppercase tracking-wider">Room</span>
+                                <span className="text-white font-bold text-xs">{scanResult.studentProfile.room_number}</span>
+                              </div>
+                            )}
+                            {scanResult.studentProfile.phone && (
+                              <div className="flex justify-between items-center">
+                                <span className="text-white/60 text-[10px] font-black uppercase tracking-wider">Phone</span>
+                                <span className="text-white font-bold text-xs">{scanResult.studentProfile.phone}</span>
+                              </div>
+                            )}
+                            <div className="flex justify-between items-center pt-2 border-t border-white/20">
+                              <span className="text-white/60 text-[10px] font-black uppercase tracking-wider">Fee Status</span>
+                              <span className="text-white font-black text-xs">
+                                ₹{(scanResult.studentProfile.paid_amount || 0).toLocaleString()} / ₹{(scanResult.studentProfile.total_fees || 0).toLocaleString()}
+                                {' '}
+                                ({scanResult.studentProfile.total_fees
+                                  ? Math.round(((scanResult.studentProfile.paid_amount || 0) / scanResult.studentProfile.total_fees) * 100)
+                                  : 0}%)
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-white/60 text-[10px] font-black uppercase tracking-wider">Account</span>
+                              <span className={`font-black text-xs px-2 py-0.5 rounded-full ${
+                                scanResult.studentProfile.status === 'Active' 
+                                  ? 'bg-white/20 text-white' 
+                                  : 'bg-black/20 text-white/70'
+                              }`}>{scanResult.studentProfile.status || 'Unknown'}</span>
+                            </div>
+                          </div>
+                        )}
                       </motion.div>
                     )}
                   </AnimatePresence>
+
                   {/* Scanning line animation */}
                   <motion.div 
                     animate={{ top: ['0%', '100%', '0%'] }}

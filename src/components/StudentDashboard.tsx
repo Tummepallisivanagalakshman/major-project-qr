@@ -27,6 +27,16 @@ interface StudentDashboardProps {
 
 type Tab = 'dashboard' | 'payments' | 'meals' | 'notifications' | 'terms' | 'settings' | 'menu';
 
+const DEFAULT_MENU = [
+  { id: 'mon', day: 'Monday',    breakfast: 'Idli, Sambar, Coconut Chutney',             lunch: 'Rice, Dal Tadka, Mixed Veg Curry, Papad',   snacks: 'Tea, Murukku',                  dinner: 'Chapati, Paneer Butter Masala, Dal' },
+  { id: 'tue', day: 'Tuesday',   breakfast: 'Poha, Jalebi, Milk',                        lunch: 'Rice, Rajma Masala, Salad, Buttermilk',     snacks: 'Coffee, Samosa',                dinner: 'Rice, Egg Curry / Dal Fry, Salad' },
+  { id: 'wed', day: 'Wednesday', breakfast: 'Aloo Paratha, Curd, Pickle',                lunch: 'Rice, Chole, Puri, Raita',                  snacks: 'Tea, Cookies',                  dinner: 'Chapati, Mixed Veg, Dal Soup' },
+  { id: 'thu', day: 'Thursday',  breakfast: 'Upma, Coconut Chutney, Banana',             lunch: 'Rice, Dal Makhani, Jeera Aloo, Salad',      snacks: 'Milk, Cake',                    dinner: 'Chapati, Chicken Curry / Paneer, Dal' },
+  { id: 'fri', day: 'Friday',    breakfast: 'Dosa, Sambar, Green Chutney',               lunch: 'Rice, Fish Curry / Veg Korma, Papad',       snacks: 'Tea, Pakora',                   dinner: 'Chapati, Aloo Gobi, Dal Tadka' },
+  { id: 'sat', day: 'Saturday',  breakfast: 'Puri Bhaji, Pickle, Dahi',                  lunch: 'Veg Biryani, Raita, Papad, Salad',          snacks: 'Coffee, Bread Puffs',           dinner: 'Chapati, Dal Fry, Matar Paneer' },
+  { id: 'sun', day: 'Sunday',    breakfast: 'Chole Bhature, Pickle, Lassi',              lunch: 'Chicken Biryani / Veg Pulao, Raita, Salad', snacks: 'Tea, Bread Pakora',             dinner: 'Chapati, Egg Bhurji / Shahi Paneer' },
+];
+
 const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onUpdateUser }) => {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [mealLogs, setMealLogs] = useState<any[]>([]);
@@ -59,7 +69,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
       setMealLogs(mealLogs || []);
       setPayments(payments || []);
       setNotifications(notifications || []);
-      setMenu(menu || []);
+      setMenu((menu && menu.length > 0) ? menu : DEFAULT_MENU);
     } catch (err) {
       console.error("Error fetching data:", err);
     }
@@ -183,25 +193,19 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      const base64 = reader.result as string;
-      setIsUploadingPhoto(true);
-      const loadingToast = toast.loading("Uploading biometric photo...");
-      try {
-        const updatedUser = await api.updateProfile({ 
-          userId: user.id, 
-          profile_photo: base64 
-        });
-        onUpdateUser({ ...user, ...updatedUser });
-        toast.success('Biometric photo updated!', { id: loadingToast });
-      } catch (err: any) {
-        toast.error(err.message || 'Upload failed', { id: loadingToast });
-      } finally {
-        setIsUploadingPhoto(false);
-      }
-    };
-    reader.readAsDataURL(file);
+    setIsUploadingPhoto(true);
+    const loadingToast = toast.loading('Uploading biometric photo...');
+    try {
+      const updatedUser = await api.uploadProfilePhoto(user.id, file);
+      onUpdateUser({ ...user, ...updatedUser });
+      toast.success('Biometric photo updated!', { id: loadingToast });
+    } catch (err: any) {
+      toast.error(err.message || 'Upload failed', { id: loadingToast });
+    } finally {
+      setIsUploadingPhoto(false);
+      // reset input so same file can be re-selected
+      e.target.value = '';
+    }
   };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {

@@ -34,6 +34,7 @@ export const loginUser = async (email: string, password: string) => {
         id: signUpData.user.id,
         username: 'admin',
         full_name: 'Super Admin',
+        email: email,
         role: 'admin',
         status: 'Active'
       }]);
@@ -72,7 +73,7 @@ export const loginUser = async (email: string, password: string) => {
 };
 
 export const signupUser = async (signupData: any) => {
-  const { email, password, username, student_id, full_name, phone } = signupData;
+  const { email, password, username, student_id, full_name, phone, ...rest } = signupData;
 
   // 1. Create Auth User
   const { data: authData, error: authError } = await insforge.auth.signUp({
@@ -83,7 +84,7 @@ export const signupUser = async (signupData: any) => {
   if (authError) throw authError;
 
   // 2. Create Profile entry
-  const assignedRole = email.endsWith('@gmail.com') ? 'admin' : 'student';
+  const assignedRole = email === 'systemadmin.qr@insforge.com' ? 'admin' : 'student';
 
   const { error: profileError } = await insforge.database.from('profiles').insert([
     {
@@ -92,8 +93,10 @@ export const signupUser = async (signupData: any) => {
       student_id,
       full_name,
       phone,
+      email,
       role: assignedRole,
       status: 'Active',
+      ...rest
     },
   ]);
 
@@ -416,6 +419,26 @@ export const updateProfile = async (profileData: any) => {
   const { data, error } = await insforge.database
     .from('profiles')
     .update(updates)
+    .eq('id', userId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
+export const uploadProfilePhoto = async (userId: string, file: File) => {
+  // 1. Upload file to InsForge Storage bucket
+  const { data: uploadData, error: uploadError } = await insforge.storage
+    .from('profile-photos')
+    .upload(`avatars/${userId}-${Date.now()}.${file.name.split('.').pop()}`, file);
+
+  if (uploadError || !uploadData) throw uploadError || new Error('Upload failed');
+
+  // 2. Save the public URL to the profile
+  const { data, error } = await insforge.database
+    .from('profiles')
+    .update({ profile_photo: uploadData.url })
     .eq('id', userId)
     .select()
     .single();

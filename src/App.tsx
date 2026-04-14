@@ -64,7 +64,7 @@ const App: React.FC = () => {
                 path="/" 
                 element={
                   user ? (
-                    (user.role === 'admin' || user.email?.endsWith('@gmail.com')) ? 
+                    user.role === 'admin' ? 
                     <AdminDashboard user={user} onLogout={handleLogout} /> : 
                     <StudentDashboard user={user} onLogout={handleLogout} onUpdateUser={setUser} />
                   ) : <LandingPage />

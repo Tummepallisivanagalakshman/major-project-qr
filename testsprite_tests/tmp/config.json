@@ -1,0 +1,18 @@
+{
+  "status": "init",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:4173/",
+  "executionArgs": {
+    "projectName": "automated-management-",
+    "projectPath": "c:\\Users\\sivan\\OneDrive\\Desktop\\qr major\\automated-management-",
+    "testIds": [],
+    "additionalInstruction": "Only run TC001, TC003, TC006, TC007, TC008, TC009, TC013, TC051, TC052. Skip camera-dependent tests. Use manual override for QR scan tests. Login as admin with email: systemadmin.qr@insforge.com password: admin@123",
+    "serverMode": "production",
+    "envs": {
+      "API_KEY": "sk-user-YMcqgSi2B3hlZdeWStAFXH3s3OFpW_Y3mJlwyn8zvVNFFlk8TLD2MfVdnN1WB16bGxpeoWj_LfBIKhMM5bCKfpvnyeTc5jTd1d90WbbMRNOYnVnm9rNhKbWriodOBvrBDEk"
+    }
+  },
+  "serverPort": 59726,
+  "proxy": "http://595637a7-1efd-4198-8f33-16f4fe833d4d:0fCCjCjV1Gjl3aYT3HuygDDDKBS7An6l@tun.testsprite.com:8080"
+}

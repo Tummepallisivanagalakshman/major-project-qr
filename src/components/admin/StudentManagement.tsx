@@ -270,8 +270,8 @@ const StudentManagement: React.FC<StudentManagementProps> = React.memo(({ studen
   const filteredStudents = React.useMemo(() => {
     if (!Array.isArray(students)) return [];
     return students.filter(s => {
-      const matchesSearch = s.full_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                            s.student_id.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = (s.full_name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+                            (s.student_id || '').toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = filterStatus === 'All' || s.status === filterStatus;
       return matchesSearch && matchesStatus;
     });
@@ -355,11 +355,11 @@ const StudentManagement: React.FC<StudentManagementProps> = React.memo(({ studen
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-violet-200 dark:shadow-none">
-                        {s.full_name.charAt(0)}
+                        {(s.full_name || 'U').charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0">
-                        <h4 className="font-bold text-slate-900 dark:text-white truncate text-base">{s.full_name}</h4>
-                        <p className="text-xs text-slate-400 font-mono tracking-tighter truncate">{s.student_id}</p>
+                        <h4 className="font-bold text-slate-900 dark:text-white truncate text-base">{s.full_name || 'Unknown'}</h4>
+                        <p className="text-xs text-slate-400 font-mono tracking-tighter truncate">{s.student_id || 'No ID'}</p>
                       </div>
                     </div>
                   </td>
@@ -378,13 +378,13 @@ const StudentManagement: React.FC<StudentManagementProps> = React.memo(({ studen
                   <td className="px-8 py-6">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-xs font-bold">
-                        <span className="text-slate-900 dark:text-white">₹{s.paid_amount.toLocaleString()}</span>
-                        <span className="text-slate-400">₹{s.total_fees.toLocaleString()}</span>
+                        <span className="text-slate-900 dark:text-white">₹{(s.paid_amount || 0).toLocaleString()}</span>
+                        <span className="text-slate-400">₹{(s.total_fees || 0).toLocaleString()}</span>
                       </div>
                       <div className="w-32 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                         <motion.div 
                           initial={{ width: 0 }}
-                          animate={{ width: `${Math.min(100, (s.paid_amount / s.total_fees) * 100)}%` }}
+                          animate={{ width: `${Math.min(100, ((s.paid_amount || 0) / (s.total_fees || 1)) * 100)}%` }}
                           className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full" 
                         />
                       </div>
