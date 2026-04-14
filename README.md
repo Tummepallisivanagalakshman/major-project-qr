@@ -1,9 +1,14 @@
 # 🏫 Elite Hostel QR Management System (InsForge Edition)
 
-## 📌 Dashboard Overview
-The Elite Hostel Management System is a premium, cloud-native solution for automated student residence administration. Originally built on a legacy Python/SQLite stack, the platform has been migrated to **InsForge**, leveraging high-performance PostgreSQL, secure Auth providers, and real-time WebSocket channels.
+## 🌐 Live Deployment
+**🚀 [Visit the Live Application](https://44ey5tr2.insforge.site)**
 
-This system provides a frictionless "Generate-and-Scan" workflow for meal access, integrated financial tracking, and comprehensive residence management.
+---
+
+## 📌 Dashboard Overview
+The Elite Hostel Management System is a premium, cloud-native solution for automated student residence administration. The platform is powered by **InsForge**, leveraging high-performance PostgreSQL, secure Authentication, and real-time WebSocket channels for instant updates.
+
+This system provides a frictionless **"Generate-and-Scan"** workflow for meal access, integrated financial tracking, and comprehensive residence management.
 
 ---
 
@@ -11,56 +16,44 @@ This system provides a frictionless "Generate-and-Scan" workflow for meal access
 
 ### 🎓 For Students
 - **Dynamic QR Authorization:** Generates secure, meal-specific QR codes with 10-second refresh intervals to prevent spoofing.
+- **Biometric Profile Photo:** Securely upload and store profile photos via InsForge Storage for administrative verification.
 - **Financial Status:** Real-time tracking of fee payments, outstanding dues, and digital receipts (PDF).
-- **Culinary Sync:** View the weekly mess menu synchronized in real-time.
-- **Personalized Alerts:** Receive broadcast and targeted notifications regarding payments and hostel events.
+- **Mess Menu Sync:** View the weekly mess menu synchronized in real-time with administrative updates.
+- **Personalized Alerts:** Receive broadcast notifications regarding payments and hostel events.
 
 ### 🛡️ For Administrators
 - **Intelligent Scanning Lens:** AI-ready scanner that validates fee status, meal eligibility, and account standing in milliseconds.
+- **Mobile-First Scanner:** Optimized mobile interface with quick-access camera bridge for scanning on the go.
 - **Admin Command Center:** Unified dashboard for monitoring occupancy, revenue, and daily meal distribution metrics.
 - **Granular Management:** Dedicated modules for Students, Rooms, Payments, Notifications, Rules, and Reports.
-- **Real-time Event Stream:** Instant UI update on successful payments or scanned arrivals.
+- **Real-time Event Stream:** Instant UI updates on successful payments or scanned arrivals via WebSocket subscriptions.
 
 ---
 
 ## 🛠️ Technology Stack
 - **Frontend:** React 18 (Vite) + TypeScript + Tailwind CSS
 - **Design System:** Rich aesthetics with Framer Motion, Lucide Icons, and Glassmorphism effects.
-- **Backend-as-a-Service:** InsForge (PostgreSQL Database, Auth, Realtime)
-- **Communications:** Real-time subscriptions via InsForge Channels (replacing Socket.IO)
+- **Backend-as-a-Service:** [InsForge](https://insforge.com) (PostgreSQL Database, Auth, Storage, Realtime)
+- **Communications:** Real-time subscriptions via InsForge Channels.
 
 ---
 
-## 📂 Project Structure & File Details
+## 📂 Project Structure
 
 ### 🏗️ Root Configuration
-- [`schema.sql`](./schema.sql): The foundational database blueprint. Contains the SQL definitions for `profiles`, `meal_records`, `payments`, `rooms`, `rules`, `menu`, and `notifications`.
-- [`.env`](./.env): Secure configuration for `VITE_INSFORGE_URL` and `VITE_INSFORGE_ANON_KEY`.
-- [`package.json`](./package.json): Project dependencies and Vite scripts.
+- [`schema.sql`](./schema.sql): Foundational database blueprint for PostgreSQL.
+- [`.env`](./.env): Secure configuration for API endpoints and keys.
+- [`vite.config.ts`](./vite.config.ts): Optimized build configuration with vendor chunk splitting.
 
 ### ⚙️ Core Logic (`src/lib/`)
-- [`insforge.ts`](./src/lib/insforge.ts): Initializes the singleton InsForge client used across the entire application.
-- [`api.ts`](./src/lib/api.ts): **The Brain of the Application.** Contains all SDK wrappers for Students and Admins, including fee validation logic, meal access checks, and financial aggregation.
-- [`realtime.ts`](./src/lib/realtime.ts): Manages all real-time event subscriptions (broadcasts, payment alerts, and meal scan updates).
+- [`insforge.ts`](./src/lib/insforge.ts): singleton InsForge client initialization.
+- [`api.ts`](./src/lib/api.ts): Central API bridge containing business logic for fee validation, meal access, and storage handling.
+- [`realtime.ts`](./src/lib/realtime.ts): WebSocket event management for live updates.
 
 ### 🖥️ User Interfaces (`src/components/`)
-- [`App.tsx`](./src/App.tsx): Root router and global Authentication provider integration.
-- [`AdminDashboard.tsx`](./src/components/AdminDashboard.tsx): High-level admin layout with contextually aware sidebar and scanner modal.
-- [`StudentDashboard.tsx`](./src/components/StudentDashboard.tsx): Feature-rich student portal with QR generator and payment gateway simulation.
-- [`Login.tsx`](./src/components/Login.tsx) & [`Signup.tsx`](./src/components/Signup.tsx): Specialized Auth views using InsForge Identity management.
-- [`MenuLogs.tsx`](./src/components/MenuLogs.tsx): Shared component for viewing/editing the weekly mess schedule.
+- [`AdminDashboard.tsx`](./src/components/AdminDashboard.tsx): High-level admin portal with responsive mobile scanner support.
+- [`StudentDashboard.tsx`](./src/components/StudentDashboard.tsx): Student portal with QR generation and payment gateway simulation.
 - [`QRScanner.tsx`](./src/components/QRScanner.tsx): Secure camera interface for administrative verification.
-
-### 📊 Admin Modules (`src/components/admin/`)
-- `Overview.tsx`: Visual analytics dashboard.
-- `StudentManagement.tsx`: Full CRUD operations for resident profiles.
-- `RoomManagement.tsx`: Dynamic occupancy and vacancy tracking.
-- `PaymentManagement.tsx`: Ledger of all transactions with real-time sync.
-- `MealLogs.tsx`: Audit trail of all meal sessions.
-- `Reports.tsx`: Historical data visualization and revenue trends.
-- `Notifications.tsx`: System-wide announcement broadcast tool.
-- `Rules.tsx`: Policy management and distribution.
-- `Settings.tsx`: Admin profile and security protocol management.
 
 ---
 
@@ -68,8 +61,8 @@ This system provides a frictionless "Generate-and-Scan" workflow for meal access
 
 ### 1. Prerequisite: InsForge Setup
 1. Create a project at [InsForge](https://insforge.com).
-2. Use the `Database` tab to run the contents of [`schema.sql`](./schema.sql).
-3. Copy your project URL and Anon Key.
+2. Run the [`schema.sql`](./schema.sql) in the Database SQL Editor.
+3. Configure your storage bucket named `profile-photos` and set it to **Public**.
 
 ### 2. Local Environment
 ```bash
@@ -79,10 +72,6 @@ cd major-project-qr
 
 # Install dependencies
 npm install
-
-# Configure environment
-cp .env.example .env
-# Edit .env with your InsForge credentials
 
 # Start Development Server
 npm run dev
@@ -96,3 +85,6 @@ npm run dev
 
 * GitHub: [@Tummepallisivanagalakshman](https://github.com/Tummepallisivanagalakshman)
 * LinkedIn: [Siva Nagalakshman](https://www.linkedin.com/in/tummepalli-sivanagalakshman-a3100224b/)
+
+---
+*Deployed with ❤️ on InsForge.*
