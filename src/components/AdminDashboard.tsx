@@ -317,9 +317,21 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }) => {
                 ))}
               </nav>
 
+              {/* Scanner button — mobile */}
+              <button
+                onClick={() => {
+                  setShowMobileMenu(false);
+                  setShowScanner(true);
+                }}
+                className="flex items-center gap-3 px-4 py-3.5 mt-3 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-xl transition-all font-bold text-sm w-full"
+              >
+                <Camera size={20} />
+                Live QR Scanner
+              </button>
+
               <button 
                 onClick={() => setShowLogoutConfirm(true)}
-                className="flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors mt-auto font-bold text-sm"
+                className="flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors mt-3 font-bold text-sm"
               >
                 <LogOut size={20} />
                 Logout
@@ -339,6 +351,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onLogout }) => {
               className="lg:hidden p-2 text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
             >
               <Menu size={24} />
+            </button>
+            {/* Quick scanner access on mobile — shown in header */}
+            <button
+              onClick={() => setShowScanner(true)}
+              className="lg:hidden p-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-xl transition-all active:scale-90"
+              title="Open QR Scanner"
+            >
+              <Camera size={22} />
             </button>
             <h2 className="text-lg sm:text-xl font-black text-gray-800 dark:text-white uppercase tracking-tight truncate max-w-[150px] sm:max-w-none">
               {menuItems.find(i => i.id === activeTab)?.label || 'Admin'}
