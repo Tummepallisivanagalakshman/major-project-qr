@@ -57,6 +57,19 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
+  const [readNotifications, setReadNotifications] = useState<number[]>(() => {
+    const saved = localStorage.getItem(`read_notifs_${user.student_id}`);
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const handleMarkAsRead = (id: number) => {
+    const updated = [...readNotifications, id];
+    setReadNotifications(updated);
+    localStorage.setItem(`read_notifs_${user.student_id}`, JSON.stringify(updated));
+  };
+
+  const visibleNotifications = notifications.filter(n => !readNotifications.includes(n.id));
+
   const fetchData = useCallback(async () => {
     try {
       const [mealLogs, payments, notifications, menu] = await Promise.all([
@@ -1057,13 +1070,13 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="px-4 py-2 bg-violet-500/10 text-violet-600 rounded-xl text-[10px] font-black uppercase tracking-widest border border-violet-500/10">
-                      {notifications.length} New
+                      {visibleNotifications.length} New
                     </span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 gap-6">
-                  {notifications.map((n) => (
+                  {visibleNotifications.map((n) => (
                     <motion.div 
                       key={n.id}
                       whileHover={{ y: -5 }}
@@ -1103,7 +1116,9 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
                               <Calendar size={14} />
                               <span className="text-[10px] font-black uppercase tracking-widest">{n.date}</span>
                             </div>
-                            <button className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all ${
+                            <button 
+                              onClick={() => handleMarkAsRead(n.id)}
+                              className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all ${
                               n.type === 'emergency' ? 'text-rose-600 hover:text-rose-700' :
                               n.type === 'payment' ? 'text-emerald-600 hover:text-emerald-700' :
                               n.type === 'admin' ? 'text-blue-600 hover:text-blue-700' : 'text-violet-600 hover:text-violet-700'
@@ -1116,7 +1131,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
                       </div>
                     </motion.div>
                   ))}
-                  {notifications.length === 0 && (
+                  {visibleNotifications.length === 0 && (
                     <div className="text-center py-32 glass-card rounded-[2.5rem] border border-dashed border-slate-200 dark:border-slate-800">
                       <div className="w-24 h-24 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-200 dark:text-slate-700 mx-auto mb-8">
                         <BellOff size={48} />
