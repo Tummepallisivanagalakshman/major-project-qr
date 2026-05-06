@@ -40,8 +40,8 @@ const App: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-violet-600/30 border-t-violet-600 rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-neutral-900/30 border-t-neutral-900 rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -49,7 +49,7 @@ const App: React.FC = () => {
   return (
     <ThemeProvider>
       <Router>
-        <div className="min-h-screen bg-gray-100 dark:bg-slate-950 transition-colors duration-300">
+        <div className="min-h-screen bg-gray-100 dark:bg-neutral-950 transition-colors duration-300">
           <Toaster 
             position="top-right" 
             toastOptions={{

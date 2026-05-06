@@ -4,26 +4,26 @@
 @tailwind utilities;
 
 :root {
-  --glass-bg: rgba(255, 255, 255, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.4);
-  --accent-primary: #7c3aed; /* Violet 600 */
-  --accent-secondary: #10b981; /* Emerald 500 */
-  --bg-color: #fcfcfd;
-  --text-color: #0f172a;
-  --f-display: 'Outfit', sans-serif;
+  --glass-bg: #ffffff;
+  --glass-border: #e5e5e5; /* neutral-200 */
+  --accent-primary: #171717; /* neutral-900 */
+  --accent-secondary: #059669; /* emerald-600 */
+  --bg-color: #fafafa; /* neutral-50 */
+  --text-color: #171717; /* neutral-900 */
+  --f-display: 'Inter', sans-serif;
   --f-body: 'Inter', sans-serif;
   --f-serif: 'Playfair Display', serif;
-  --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 10px -1px rgba(0, 0, 0, 0.03);
+  --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
 }
 
 .dark {
-  --glass-bg: rgba(15, 23, 42, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.05);
-  --bg-color: #020617;
-  --text-color: #f8fafc;
-  --accent-primary: #a78bfa; /* Violet 400 */
-  --accent-secondary: #34d399; /* Emerald 400 */
-  --card-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  --glass-bg: #171717; /* neutral-900 */
+  --glass-border: #262626; /* neutral-800 */
+  --bg-color: #0a0a0a; /* neutral-950 */
+  --text-color: #f5f5f5; /* neutral-100 */
+  --accent-primary: #f5f5f5; /* neutral-100 */
+  --accent-secondary: #10b981; /* emerald-500 */
+  --card-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
 }
 
 body {
@@ -33,12 +33,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--bg-color);
   color: var(--text-color);
-  transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--f-display);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
+  font-weight: 600;
 }
 
 .serif-italic {
@@ -46,23 +47,22 @@ h1, h2, h3, h4, h5, h6 {
   font-style: italic;
 }
 
-/* Glassmorphism utility */
+/* Modern SaaS Card (Replaces heavy glassmorphism) */
 .glass-card {
   background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
   box-shadow: var(--card-shadow);
+  border-radius: 12px;
 }
 
-/* Pro Grid Background */
+/* Subtle Grid Background */
 .pro-grid {
-  background-image: radial-gradient(circle at 2px 2px, rgba(0, 0, 0, 0.03) 1px, transparent 0);
-  background-size: 24px 24px;
+  background-image: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.05) 1px, transparent 0);
+  background-size: 32px 32px;
 }
 
 .dark .pro-grid {
-  background-image: radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
 }
 
 /* Smooth fade-in animation */
@@ -114,22 +114,22 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Modern Button Style */
 .btn-primary {
-  @apply bg-violet-600 text-white px-8 py-3.5 rounded-2xl font-bold shadow-lg shadow-violet-200 hover:bg-violet-700 hover:shadow-violet-300 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2;
+  @apply bg-neutral-900 text-white px-8 py-3.5 rounded-2xl font-bold shadow-lg shadow-neutral-300 hover:bg-neutral-950 hover:shadow-neutral-400 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2;
 }
 
 .dark .btn-primary {
-  @apply bg-violet-500 shadow-none hover:bg-violet-400;
+  @apply bg-neutral-800 shadow-none hover:bg-neutral-600;
 }
 
 .btn-secondary {
-  @apply bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-8 py-3.5 rounded-2xl font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center justify-center gap-2;
+  @apply bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white px-8 py-3.5 rounded-2xl font-bold border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all active:scale-95 flex items-center justify-center gap-2;
 }
 
 /* Gradient Text */
 .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-emerald-500;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-neutral-900 to-neutral-500;
 }
 
 .dark .text-gradient {
-  @apply from-violet-400 to-emerald-400;
+  @apply from-neutral-100 to-neutral-400;
 }

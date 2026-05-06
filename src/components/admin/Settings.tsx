@@ -45,11 +45,11 @@ const Settings: React.FC<SettingsProps> = ({ user, onLogout }) => {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-            <SettingsIcon className="text-violet-500" size={32} />
+          <h2 className="text-3xl font-black text-neutral-900 dark:text-white tracking-tight flex items-center gap-3">
+            <SettingsIcon className="text-neutral-800" size={32} />
             System Configuration
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium italic">Manage your administrative profile and security protocols.</p>
+          <p className="text-neutral-500 dark:text-neutral-400 mt-1 font-medium italic">Manage your administrative profile and security protocols.</p>
         </div>
       </div>
 
@@ -62,29 +62,29 @@ const Settings: React.FC<SettingsProps> = ({ user, onLogout }) => {
           className="glass-card p-10 rounded-[3rem] border border-white/20 dark:border-white/5 shadow-2xl"
         >
           <div className="flex items-center gap-4 mb-10">
-            <div className="p-3 bg-violet-500/10 text-violet-500 rounded-2xl">
+            <div className="p-3 bg-neutral-800/10 text-neutral-800 rounded-2xl">
               <User size={24} />
             </div>
             <div>
-              <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Admin Profile</h3>
-              <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Personal identification</p>
+              <h3 className="text-xl font-black text-neutral-900 dark:text-white tracking-tight">Admin Profile</h3>
+              <p className="text-[10px] text-neutral-400 font-black uppercase tracking-widest">Personal identification</p>
             </div>
           </div>
 
           <div className="space-y-10">
-            <div className="flex flex-col sm:flex-row items-center gap-8 p-8 bg-slate-50/50 dark:bg-slate-900/50 rounded-[2.5rem] border border-slate-100 dark:border-slate-800">
+            <div className="flex flex-col sm:flex-row items-center gap-8 p-8 bg-neutral-50/50 dark:bg-neutral-900/50 rounded-[2.5rem] border border-neutral-100 dark:border-neutral-800">
               <div className="relative group">
-                <div className="w-28 h-28 rounded-[2rem] bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white font-black text-4xl shadow-2xl shadow-violet-500/20 group-hover:scale-105 transition-transform duration-500">
+                <div className="w-28 h-28 rounded-[2rem] bg-gradient-to-br from-neutral-900 to-indigo-600 flex items-center justify-center text-white font-black text-4xl shadow-2xl shadow-neutral-800/20 group-hover:scale-105 transition-transform duration-500">
                   {user.full_name?.charAt(0) || user.username?.charAt(0)}
                 </div>
-                <div className="absolute -bottom-2 -right-2 p-2 bg-emerald-500 text-white rounded-xl shadow-lg border-4 border-white dark:border-slate-900">
+                <div className="absolute -bottom-2 -right-2 p-2 bg-emerald-500 text-white rounded-xl shadow-lg border-4 border-white dark:border-neutral-900">
                   <ShieldCheck size={16} />
                 </div>
               </div>
               <div className="text-center sm:text-left">
-                <h4 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{user.full_name || 'System Admin'}</h4>
-                <p className="text-slate-500 dark:text-slate-400 font-bold mt-1">@{user.username}</p>
-                <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-violet-500/10 text-violet-500 rounded-xl text-[10px] font-black uppercase tracking-widest">
+                <h4 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight">{user.full_name || 'System Admin'}</h4>
+                <p className="text-neutral-500 dark:text-neutral-400 font-bold mt-1">@{user.username}</p>
+                <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-neutral-800/10 text-neutral-800 rounded-xl text-[10px] font-black uppercase tracking-widest">
                   <Zap size={12} />
                   Super Admin Access
                 </div>
@@ -93,20 +93,20 @@ const Settings: React.FC<SettingsProps> = ({ user, onLogout }) => {
 
             <div className="grid grid-cols-1 gap-6">
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
                   <Mail size={12} />
                   Email Address
                 </label>
-                <div className="px-6 py-4 bg-slate-50 dark:bg-slate-900 rounded-2xl text-slate-700 dark:text-slate-300 font-bold border border-slate-100 dark:border-slate-800 shadow-inner">
+                <div className="px-6 py-4 bg-neutral-50 dark:bg-neutral-900 rounded-2xl text-neutral-700 dark:text-neutral-300 font-bold border border-neutral-100 dark:border-neutral-800 shadow-inner">
                   {user.email || 'admin@hostel.com'}
                 </div>
               </div>
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
                   <Phone size={12} />
                   Phone Number
                 </label>
-                <div className="px-6 py-4 bg-slate-50 dark:bg-slate-900 rounded-2xl text-slate-700 dark:text-slate-300 font-bold border border-slate-100 dark:border-slate-800 shadow-inner">
+                <div className="px-6 py-4 bg-neutral-50 dark:bg-neutral-900 rounded-2xl text-neutral-700 dark:text-neutral-300 font-bold border border-neutral-100 dark:border-neutral-800 shadow-inner">
                   {user.phone || '+91 98765 43210'}
                 </div>
               </div>
@@ -126,48 +126,48 @@ const Settings: React.FC<SettingsProps> = ({ user, onLogout }) => {
               <Key size={24} />
             </div>
             <div>
-              <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Security Protocol</h3>
-              <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Credential management</p>
+              <h3 className="text-xl font-black text-neutral-900 dark:text-white tracking-tight">Security Protocol</h3>
+              <p className="text-[10px] text-neutral-400 font-black uppercase tracking-widest">Credential management</p>
             </div>
           </div>
 
           <form onSubmit={handlePasswordChange} className="space-y-8">
             <div className="space-y-3">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Current Password</label>
+              <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-1">Current Password</label>
               <input 
                 required
                 type="password"
                 value={oldPassword}
                 onChange={e => setOldPassword(e.target.value)}
-                className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 outline-none transition-all font-medium text-slate-900 dark:text-white"
+                className="w-full px-6 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 focus:ring-4 focus:ring-neutral-800/10 focus:border-neutral-800 outline-none transition-all font-medium text-neutral-900 dark:text-white"
                 placeholder="••••••••"
               />
             </div>
             <div className="space-y-3">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">New Password</label>
+              <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-1">New Password</label>
               <input 
                 required
                 type="password"
                 value={newPassword}
                 onChange={e => setNewPassword(e.target.value)}
-                className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 outline-none transition-all font-medium text-slate-900 dark:text-white"
+                className="w-full px-6 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 focus:ring-4 focus:ring-neutral-800/10 focus:border-neutral-800 outline-none transition-all font-medium text-neutral-900 dark:text-white"
                 placeholder="••••••••"
               />
             </div>
             <div className="space-y-3">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Confirm New Password</label>
+              <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-1">Confirm New Password</label>
               <input 
                 required
                 type="password"
                 value={confirmPassword}
                 onChange={e => setConfirmPassword(e.target.value)}
-                className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 outline-none transition-all font-medium text-slate-900 dark:text-white"
+                className="w-full px-6 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 focus:ring-4 focus:ring-neutral-800/10 focus:border-neutral-800 outline-none transition-all font-medium text-neutral-900 dark:text-white"
                 placeholder="••••••••"
               />
             </div>
             <button 
               disabled={isUpdating}
-              className="w-full py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[2rem] font-black text-[10px] uppercase tracking-[0.2em] hover:scale-[1.02] transition-all shadow-2xl shadow-slate-900/20 disabled:opacity-50 flex items-center justify-center gap-3"
+              className="w-full py-5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[2rem] font-black text-[10px] uppercase tracking-[0.2em] hover:scale-[1.02] transition-all shadow-2xl shadow-neutral-900/20 disabled:opacity-50 flex items-center justify-center gap-3"
             >
               {isUpdating ? (
                 <Activity size={16} className="animate-spin" />

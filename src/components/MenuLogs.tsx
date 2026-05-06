@@ -85,10 +85,10 @@ const MenuLogs: React.FC<MenuLogsProps> = ({ isAdmin = false }) => {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-4">
         <div className="relative">
-          <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin"></div>
-          <div className="absolute inset-0 blur-lg bg-violet-500/10 animate-pulse"></div>
+          <div className="w-12 h-12 border-4 border-neutral-800/20 border-t-neutral-800 rounded-full animate-spin"></div>
+          <div className="absolute inset-0 blur-lg bg-neutral-800/10 animate-pulse"></div>
         </div>
-        <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Loading Culinary Data</p>
+        <p className="text-xs font-black text-neutral-400 uppercase tracking-widest">Loading Culinary Data</p>
       </div>
     );
   }
@@ -97,13 +97,13 @@ const MenuLogs: React.FC<MenuLogsProps> = ({ isAdmin = false }) => {
     <div className="space-y-10">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
-          <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+          <h2 className="text-3xl font-black text-neutral-900 dark:text-white tracking-tight flex items-center gap-3">
             Weekly Mess Menu
-            <Sparkles className="text-violet-500" size={24} />
+            <Sparkles className="text-neutral-800" size={24} />
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium italic">Premium Indian culinary schedule for the current cycle.</p>
+          <p className="text-neutral-500 dark:text-neutral-400 mt-2 font-medium italic">Premium Indian culinary schedule for the current cycle.</p>
         </div>
-        <div className="inline-flex items-center gap-3 px-6 py-3 bg-violet-500/10 dark:bg-violet-500/5 text-violet-600 dark:text-violet-400 rounded-2xl border border-violet-500/20 backdrop-blur-md">
+        <div className="inline-flex items-center gap-3 px-6 py-3 bg-neutral-800/10 dark:bg-neutral-800/5 text-neutral-900 dark:text-neutral-600 rounded-2xl border border-neutral-800/20 backdrop-blur-md">
           <Calendar size={20} />
           <span className="font-black text-xs uppercase tracking-widest">Today: {currentDay}</span>
         </div>
@@ -119,21 +119,21 @@ const MenuLogs: React.FC<MenuLogsProps> = ({ isAdmin = false }) => {
             layout
             className={`glass-card rounded-[2.5rem] border transition-all duration-500 overflow-hidden ${
               item.day === currentDay 
-                ? 'border-violet-500/50 shadow-2xl shadow-violet-500/10 ring-1 ring-violet-500/20' 
+                ? 'border-neutral-800/50 shadow-2xl shadow-neutral-800/10 ring-1 ring-neutral-800/20' 
                 : 'border-white/20 dark:border-white/5 shadow-sm'
             }`}
           >
             <div className={`p-8 border-b border-white/10 dark:border-white/5 flex items-center justify-between ${
-              item.day === currentDay ? 'bg-violet-500/5' : ''
+              item.day === currentDay ? 'bg-neutral-800/5' : ''
             }`}>
               <div className="flex items-center gap-6">
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-transform duration-500 hover:rotate-12 ${
-                  item.day === currentDay ? 'bg-violet-600 text-white shadow-xl shadow-violet-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
+                  item.day === currentDay ? 'bg-neutral-900 text-white shadow-xl shadow-neutral-800/30' : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'
                 }`}>
                   <span className="font-black text-xl">{item.day.charAt(0)}</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-3 tracking-tight">
+                  <h3 className="text-xl font-black text-neutral-900 dark:text-white flex items-center gap-3 tracking-tight">
                     {item.day}
                     {item.day === currentDay && (
                       <span className="text-[10px] bg-emerald-500 text-white px-3 py-1 rounded-full uppercase tracking-[0.2em] font-black shadow-lg shadow-emerald-500/20">Active Today</span>
@@ -153,7 +153,7 @@ const MenuLogs: React.FC<MenuLogsProps> = ({ isAdmin = false }) => {
                       </button>
                       <button 
                         onClick={() => setEditingId(null)}
-                        className="p-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-90"
+                        className="p-3 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 rounded-2xl hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all active:scale-90"
                       >
                         <X size={20} />
                       </button>
@@ -161,7 +161,7 @@ const MenuLogs: React.FC<MenuLogsProps> = ({ isAdmin = false }) => {
                   ) : (
                     <button 
                       onClick={() => handleEdit(item)}
-                      className="p-3 bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-90"
+                      className="p-3 bg-neutral-100 dark:bg-neutral-800 text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-600 rounded-2xl hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all active:scale-90"
                     >
                       <Edit2 size={20} />
                     </button>
@@ -183,10 +183,10 @@ const MenuLogs: React.FC<MenuLogsProps> = ({ isAdmin = false }) => {
                   <textarea 
                     value={editData.breakfast}
                     onChange={e => setEditData({...editData, breakfast: e.target.value})}
-                    className="w-full p-4 text-sm bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-2xl focus:ring-2 focus:ring-violet-500 outline-none resize-none h-32 font-bold transition-all"
+                    className="w-full p-4 text-sm bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-100 dark:border-neutral-800 rounded-2xl focus:ring-2 focus:ring-neutral-800 outline-none resize-none h-32 font-bold transition-all"
                   />
                 ) : (
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-bold italic">
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed font-bold italic">
                     {item.breakfast}
                   </p>
                 )}
@@ -204,10 +204,10 @@ const MenuLogs: React.FC<MenuLogsProps> = ({ isAdmin = false }) => {
                   <textarea 
                     value={editData.lunch}
                     onChange={e => setEditData({...editData, lunch: e.target.value})}
-                    className="w-full p-4 text-sm bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-2xl focus:ring-2 focus:ring-violet-500 outline-none resize-none h-32 font-bold transition-all"
+                    className="w-full p-4 text-sm bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-100 dark:border-neutral-800 rounded-2xl focus:ring-2 focus:ring-neutral-800 outline-none resize-none h-32 font-bold transition-all"
                   />
                 ) : (
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-bold italic">
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed font-bold italic">
                     {item.lunch}
                   </p>
                 )}
@@ -225,10 +225,10 @@ const MenuLogs: React.FC<MenuLogsProps> = ({ isAdmin = false }) => {
                   <textarea 
                     value={editData.snacks}
                     onChange={e => setEditData({...editData, snacks: e.target.value})}
-                    className="w-full p-4 text-sm bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-2xl focus:ring-2 focus:ring-violet-500 outline-none resize-none h-32 font-bold transition-all"
+                    className="w-full p-4 text-sm bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-100 dark:border-neutral-800 rounded-2xl focus:ring-2 focus:ring-neutral-800 outline-none resize-none h-32 font-bold transition-all"
                   />
                 ) : (
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-bold italic">
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed font-bold italic">
                     {item.snacks}
                   </p>
                 )}
@@ -246,10 +246,10 @@ const MenuLogs: React.FC<MenuLogsProps> = ({ isAdmin = false }) => {
                   <textarea 
                     value={editData.dinner}
                     onChange={e => setEditData({...editData, dinner: e.target.value})}
-                    className="w-full p-4 text-sm bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-2xl focus:ring-2 focus:ring-violet-500 outline-none resize-none h-32 font-bold transition-all"
+                    className="w-full p-4 text-sm bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-100 dark:border-neutral-800 rounded-2xl focus:ring-2 focus:ring-neutral-800 outline-none resize-none h-32 font-bold transition-all"
                   />
                 ) : (
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-bold italic">
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed font-bold italic">
                     {item.dinner}
                   </p>
                 )}

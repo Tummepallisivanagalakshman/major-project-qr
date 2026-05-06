@@ -29,8 +29,8 @@ const Overview: React.FC<OverviewProps> = React.memo(({ stats }) => {
   };
 
   const roomData = [
-    { name: 'Occupied', value: stats.rooms?.occupied || 0, color: '#8B5CF6' }, // Violet-500
-    { name: 'Available', value: stats.rooms?.available || 0, color: '#10B981' }, // Emerald-500
+    { name: 'Occupied', value: stats.rooms?.occupied || 0, color: '#8B5CF6' }, // neutral-800
+    { name: 'Available', value: stats.rooms?.available || 0, color: '#10B981' }, // emerald-500
   ];
 
   const mealData = [
@@ -51,17 +51,17 @@ const Overview: React.FC<OverviewProps> = React.memo(({ stats }) => {
           <Icon size={24} className="text-white" />
         </div>
         <div className="flex flex-col items-end">
-          <span className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{value}</span>
+          <span className="text-3xl font-black text-neutral-900 dark:text-white tracking-tight">{value}</span>
           <div className="flex items-center gap-1 text-[10px] font-black text-emerald-500 uppercase tracking-widest mt-1">
             <TrendingUp size={12} />
             Live
           </div>
         </div>
       </div>
-      <h3 className="text-slate-500 dark:text-slate-400 font-bold text-sm uppercase tracking-wider">{title}</h3>
+      <h3 className="text-neutral-500 dark:text-neutral-400 font-bold text-sm uppercase tracking-wider">{title}</h3>
       {subtitle && (
-        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 font-black uppercase tracking-widest flex items-center gap-2">
-          <Activity size={12} className="text-violet-500" />
+        <p className="text-[10px] text-neutral-400 dark:text-neutral-500 mt-2 font-black uppercase tracking-widest flex items-center gap-2">
+          <Activity size={12} className="text-neutral-800" />
           {subtitle}
         </p>
       )}
@@ -73,15 +73,15 @@ const Overview: React.FC<OverviewProps> = React.memo(({ stats }) => {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+          <h2 className="text-3xl font-black text-neutral-900 dark:text-white tracking-tight flex items-center gap-3">
             <Zap className="text-amber-500" size={32} />
             System Pulse
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium italic">Real-time operational intelligence and analytics.</p>
+          <p className="text-neutral-500 dark:text-neutral-400 mt-1 font-medium italic">Real-time operational intelligence and analytics.</p>
         </div>
-        <div className="flex items-center gap-4 px-6 py-3 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-white/5 shadow-sm">
+        <div className="flex items-center gap-4 px-6 py-3 bg-white/50 dark:bg-neutral-900/50 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-white/5 shadow-sm">
           <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-          <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Live Monitoring Active</span>
+          <span className="text-[10px] font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">Live Monitoring Active</span>
         </div>
       </div>
 
@@ -91,7 +91,7 @@ const Overview: React.FC<OverviewProps> = React.memo(({ stats }) => {
           title="Total Students" 
           value={stats.students?.total || 0} 
           icon={Users} 
-          color="bg-violet-500"
+          color="bg-neutral-800"
           subtitle={`${stats.students?.active || 0} Active Residents`}
           delay={0.1}
         />
@@ -131,12 +131,12 @@ const Overview: React.FC<OverviewProps> = React.memo(({ stats }) => {
         >
           <div className="flex items-center justify-between mb-10">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-violet-500/10 text-violet-500 rounded-2xl">
+              <div className="p-3 bg-neutral-800/10 text-neutral-800 rounded-2xl">
                 <BarChart3 size={24} />
               </div>
               <div>
-                <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Meal Distribution</h3>
-                <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Daily consumption patterns</p>
+                <h3 className="text-xl font-black text-neutral-900 dark:text-white tracking-tight">Meal Distribution</h3>
+                <p className="text-[10px] text-neutral-400 font-black uppercase tracking-widest">Daily consumption patterns</p>
               </div>
             </div>
           </div>
@@ -149,20 +149,20 @@ const Overview: React.FC<OverviewProps> = React.memo(({ stats }) => {
                     <stop offset="100%" stopColor="#7C3AED" stopOpacity={0.8} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-slate-100 dark:text-slate-800" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-neutral-100 dark:text-neutral-800" />
                 <XAxis 
                   dataKey="name" 
                   axisLine={false} 
                   tickLine={false} 
                   tick={{ fill: 'currentColor' }} 
-                  className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-widest" 
+                  className="text-neutral-400 dark:text-neutral-500 text-[10px] font-black uppercase tracking-widest" 
                   dy={10}
                 />
                 <YAxis 
                   axisLine={false} 
                   tickLine={false} 
                   tick={{ fill: 'currentColor' }} 
-                  className="text-slate-400 dark:text-slate-500 text-[10px] font-black" 
+                  className="text-neutral-400 dark:text-neutral-500 text-[10px] font-black" 
                 />
                 <Tooltip 
                   cursor={{ fill: 'currentColor', opacity: 0.05 }}
@@ -190,24 +190,24 @@ const Overview: React.FC<OverviewProps> = React.memo(({ stats }) => {
           className="glass-card p-10 rounded-[3rem] border border-white/20 dark:border-white/5 shadow-2xl flex flex-col items-center justify-center text-center relative overflow-hidden group"
         >
           <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
-            <Sparkles size={120} className="text-violet-500" />
+            <Sparkles size={120} className="text-neutral-800" />
           </div>
           
-          <div className="w-20 h-20 bg-violet-500/10 text-violet-500 rounded-3xl flex items-center justify-center mb-8 shadow-inner">
+          <div className="w-20 h-20 bg-neutral-800/10 text-neutral-800 rounded-3xl flex items-center justify-center mb-8 shadow-inner">
             <QrCode size={40} />
           </div>
-          <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-3">Mess Access QR</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-10 px-6 leading-relaxed font-medium">
+          <h3 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight mb-3">Mess Access QR</h3>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-10 px-6 leading-relaxed font-medium">
             Deploy this QR at the counter for automated attendance tracking.
           </p>
           
-          <div className="p-8 bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 mb-10 relative group-hover:scale-105 transition-transform">
+          <div className="p-8 bg-white rounded-[2.5rem] shadow-2xl border border-neutral-100 mb-10 relative group-hover:scale-105 transition-transform">
             <QRCodeCanvas id="mess-qr" value="MESS_ACCESS" size={180} level="H" />
           </div>
           
           <button 
             onClick={downloadMessQR}
-            className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-slate-900/10"
+            className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-neutral-900/10"
           >
             <Download size={18} /> Download Asset
           </button>
@@ -226,8 +226,8 @@ const Overview: React.FC<OverviewProps> = React.memo(({ stats }) => {
             <PieIcon size={24} />
           </div>
           <div>
-            <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Capacity Analytics</h3>
-            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Room utilization metrics</p>
+            <h3 className="text-xl font-black text-neutral-900 dark:text-white tracking-tight">Capacity Analytics</h3>
+            <p className="text-[10px] text-neutral-400 font-black uppercase tracking-widest">Room utilization metrics</p>
           </div>
         </div>
         
@@ -264,18 +264,18 @@ const Overview: React.FC<OverviewProps> = React.memo(({ stats }) => {
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-4xl font-black text-slate-900 dark:text-white">{stats.rooms?.total || 0}</span>
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Units</span>
+              <span className="text-4xl font-black text-neutral-900 dark:text-white">{stats.rooms?.total || 0}</span>
+              <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Total Units</span>
             </div>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-1 gap-6 w-full md:w-auto">
             {roomData.map((item) => (
-              <div key={item.name} className="flex items-center gap-6 p-6 rounded-3xl bg-slate-50/50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
+              <div key={item.name} className="flex items-center gap-6 p-6 rounded-3xl bg-neutral-50/50 dark:bg-neutral-900/50 border border-neutral-100 dark:border-neutral-800">
                 <div className="w-4 h-4 rounded-full shadow-lg" style={{ backgroundColor: item.color }} />
                 <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{item.name}</p>
-                  <p className="text-2xl font-black text-slate-900 dark:text-white">{item.value}</p>
+                  <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">{item.name}</p>
+                  <p className="text-2xl font-black text-neutral-900 dark:text-white">{item.value}</p>
                 </div>
               </div>
             ))}

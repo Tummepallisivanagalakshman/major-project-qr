@@ -57,11 +57,11 @@ const Notifications: React.FC = () => {
     <div className="space-y-10 animate-fade-in">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-            <Bell className="text-violet-500" size={32} />
+          <h2 className="text-3xl font-black text-neutral-900 dark:text-white tracking-tight flex items-center gap-3">
+            <Bell className="text-neutral-800" size={32} />
             Broadcast Center
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">Dispatch critical updates and announcements to the entire student body.</p>
+          <p className="text-neutral-500 dark:text-neutral-400 mt-1 font-medium">Dispatch critical updates and announcements to the entire student body.</p>
         </div>
       </div>
 
@@ -73,33 +73,33 @@ const Notifications: React.FC = () => {
         >
           <div className="glass-card p-8 rounded-[2.5rem] border border-white/20 dark:border-white/5 shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
-              <Send size={120} className="text-violet-500" />
+              <Send size={120} className="text-neutral-800" />
             </div>
             
-            <h3 className="text-xl font-black text-slate-900 dark:text-white mb-8 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
-                <Send size={20} className="text-violet-500" />
+            <h3 className="text-xl font-black text-neutral-900 dark:text-white mb-8 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-neutral-800/10 flex items-center justify-center">
+                <Send size={20} className="text-neutral-800" />
               </div>
               Compose Broadcast
             </h3>
             
             <form onSubmit={handleBroadcast} className="space-y-8">
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Message Headline</label>
+                <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-1">Message Headline</label>
                 <input 
                   required
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  className="w-full px-6 py-4 rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-violet-500 outline-none transition-all dark:text-white font-bold"
+                  className="w-full px-6 py-4 rounded-2xl border border-neutral-100 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-neutral-800 outline-none transition-all dark:text-white font-bold"
                   placeholder="e.g. Scheduled Maintenance"
                 />
               </div>
               
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Priority Category</label>
+                <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-1">Priority Category</label>
                 <div className="grid grid-cols-3 gap-4">
                   {[
-                    { id: 'admin', label: 'General', icon: Info, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+                    { id: 'admin', label: 'General', icon: Info, color: 'text-neutral-800', bg: 'bg-neutral-800/10' },
                     { id: 'payment', label: 'Finance', icon: CreditCard, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
                     { id: 'emergency', label: 'Urgent', icon: AlertTriangle, color: 'text-rose-500', bg: 'bg-rose-500/10' }
                   ].map((item) => (
@@ -109,19 +109,19 @@ const Notifications: React.FC = () => {
                       onClick={() => setType(item.id)}
                       className={`flex flex-col items-center gap-3 p-5 rounded-[1.5rem] border-2 transition-all relative group ${
                         type === item.id 
-                        ? 'border-violet-500 bg-violet-500/5 shadow-lg shadow-violet-500/10' 
-                        : 'border-slate-50 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700'
+                        ? 'border-neutral-800 bg-neutral-800/5 shadow-lg shadow-neutral-800/10' 
+                        : 'border-neutral-50 dark:border-neutral-800 hover:border-neutral-200 dark:hover:border-neutral-700'
                       }`}
                     >
                       <div className={`p-3 rounded-xl ${item.bg} ${item.color} group-hover:scale-110 transition-transform`}>
                         <item.icon size={24} />
                       </div>
-                      <span className={`text-[10px] font-black uppercase tracking-widest ${type === item.id ? 'text-violet-500' : 'text-slate-500'}`}>
+                      <span className={`text-[10px] font-black uppercase tracking-widest ${type === item.id ? 'text-neutral-800' : 'text-neutral-500'}`}>
                         {item.label}
                       </span>
                       {type === item.id && (
                         <motion.div layoutId="active-type" className="absolute -top-1 -right-1">
-                          <CheckCircle size={16} className="text-violet-500 fill-white dark:fill-slate-900" />
+                          <CheckCircle size={16} className="text-neutral-800 fill-white dark:fill-neutral-900" />
                         </motion.div>
                       )}
                     </button>
@@ -130,20 +130,20 @@ const Notifications: React.FC = () => {
               </div>
               
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Detailed Content</label>
+                <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-1">Detailed Content</label>
                 <textarea 
                   required
                   rows={5}
                   value={message}
                   onChange={e => setMessage(e.target.value)}
-                  className="w-full px-6 py-4 rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-violet-500 outline-none transition-all dark:text-white font-medium resize-none"
+                  className="w-full px-6 py-4 rounded-2xl border border-neutral-100 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-neutral-800 outline-none transition-all dark:text-white font-medium resize-none"
                   placeholder="Describe the update in detail..."
                 />
               </div>
               
               <button 
                 disabled={isSending}
-                className="w-full py-5 bg-violet-600 text-white rounded-[1.5rem] font-black uppercase tracking-widest hover:bg-violet-700 shadow-xl shadow-violet-500/20 transition-all disabled:opacity-50 flex items-center justify-center gap-3 group"
+                className="w-full py-5 bg-neutral-900 text-white rounded-[1.5rem] font-black uppercase tracking-widest hover:bg-neutral-950 shadow-xl shadow-neutral-800/20 transition-all disabled:opacity-50 flex items-center justify-center gap-3 group"
               >
                 {isSending ? (
                   <>
@@ -166,13 +166,13 @@ const Notifications: React.FC = () => {
           animate={{ opacity: 1, x: 0 }}
           className="lg:col-span-5 space-y-8"
         >
-          <div className="bg-gradient-to-br from-violet-600 to-indigo-700 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden group">
+          <div className="bg-gradient-to-br from-neutral-900 to-indigo-700 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden group">
             <div className="absolute -bottom-10 -right-10 opacity-10 group-hover:scale-110 transition-transform duration-700">
               <Zap size={200} />
             </div>
             
             <h3 className="text-xl font-black mb-6 flex items-center gap-3">
-              <Sparkles size={24} className="text-violet-200" />
+              <Sparkles size={24} className="text-neutral-300" />
               Smart Templates
             </h3>
             <div className="space-y-4 relative z-10">
@@ -199,15 +199,15 @@ const Notifications: React.FC = () => {
           </div>
 
           <div className="glass-card p-8 rounded-[2.5rem] border border-white/20 dark:border-white/5 shadow-xl h-[500px] overflow-y-auto custom-scrollbar">
-            <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-3 sticky top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md pb-4 z-10">
-              <History size={24} className="text-slate-400" />
+            <h3 className="text-xl font-black text-neutral-900 dark:text-white mb-6 flex items-center gap-3 sticky top-0 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md pb-4 z-10">
+              <History size={24} className="text-neutral-400" />
               Recent Activity
             </h3>
             <div className="space-y-4">
               {notifications.map((log) => (
-                <div key={log.id} className="flex gap-4 p-5 bg-slate-50/50 dark:bg-slate-800/50 rounded-2xl border border-slate-100/50 dark:border-slate-700/50 group hover:border-violet-500/30 transition-colors">
+                <div key={log.id} className="flex gap-4 p-5 bg-neutral-50/50 dark:bg-neutral-800/50 rounded-2xl border border-neutral-100/50 dark:border-neutral-700/50 group hover:border-neutral-800/30 transition-colors">
                   <div className={`p-3 rounded-xl h-fit group-hover:scale-110 transition-transform ${
-                    log.type === 'admin' ? 'bg-blue-500/10 text-blue-500' :
+                    log.type === 'admin' ? 'bg-neutral-800/10 text-neutral-800' :
                     log.type === 'emergency' ? 'bg-rose-500/10 text-rose-500' :
                     'bg-emerald-500/10 text-emerald-500'
                   }`}>
@@ -216,20 +216,20 @@ const Notifications: React.FC = () => {
                      <CreditCard size={18} />}
                   </div>
                   <div>
-                    <h4 className="font-black text-sm text-slate-800 dark:text-white tracking-tight">{log.title}</h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-2 line-clamp-2">{log.message}</p>
+                    <h4 className="font-black text-sm text-neutral-800 dark:text-white tracking-tight">{log.title}</h4>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 mb-2 line-clamp-2">{log.message}</p>
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
                         {log.student_id ? `Student: ${log.student_id}` : 'All Students'}
                       </span>
-                      <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{log.date}</span>
+                      <span className="w-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-600" />
+                      <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">{log.date}</span>
                     </div>
                   </div>
                 </div>
               ))}
               {notifications.length === 0 && (
-                <p className="text-center text-slate-500 text-sm py-4">No notifications yet.</p>
+                <p className="text-center text-neutral-500 text-sm py-4">No notifications yet.</p>
               )}
             </div>
           </div>

@@ -82,17 +82,17 @@ const RoomManagement: React.FC<RoomManagementProps> = ({ onUpdate }) => {
       <form onSubmit={handleSubmit} className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-3">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Room Number</label>
+            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-1">Room Number</label>
             <input 
               required
               value={formData.room_number}
               onChange={e => setFormData({...formData, room_number: e.target.value})}
-              className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 outline-none transition-all font-bold text-slate-900 dark:text-white"
+              className="w-full px-6 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 focus:ring-4 focus:ring-neutral-800/10 focus:border-neutral-800 outline-none transition-all font-bold text-neutral-900 dark:text-white"
               placeholder="e.g. 101"
             />
           </div>
           <div className="space-y-3">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Capacity</label>
+            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-1">Capacity</label>
             <input 
               required
               type="number"
@@ -100,26 +100,26 @@ const RoomManagement: React.FC<RoomManagementProps> = ({ onUpdate }) => {
               max="10"
               value={formData.capacity}
               onChange={e => setFormData({...formData, capacity: parseInt(e.target.value)})}
-              className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 outline-none transition-all font-bold text-slate-900 dark:text-white"
+              className="w-full px-6 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 focus:ring-4 focus:ring-neutral-800/10 focus:border-neutral-800 outline-none transition-all font-bold text-neutral-900 dark:text-white"
             />
           </div>
           <div className="space-y-3">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Room Type</label>
+            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-1">Room Type</label>
             <select 
               value={formData.type}
               onChange={e => setFormData({...formData, type: e.target.value})}
-              className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 outline-none transition-all font-bold text-slate-900 dark:text-white appearance-none"
+              className="w-full px-6 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 focus:ring-4 focus:ring-neutral-800/10 focus:border-neutral-800 outline-none transition-all font-bold text-neutral-900 dark:text-white appearance-none"
             >
               <option value="AC">AC</option>
               <option value="Non-AC">Non-AC</option>
             </select>
           </div>
           <div className="space-y-3">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Floor</label>
+            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-1">Floor</label>
             <select 
               value={formData.floor}
               onChange={e => setFormData({...formData, floor: e.target.value})}
-              className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 outline-none transition-all font-bold text-slate-900 dark:text-white appearance-none"
+              className="w-full px-6 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 focus:ring-4 focus:ring-neutral-800/10 focus:border-neutral-800 outline-none transition-all font-bold text-neutral-900 dark:text-white appearance-none"
             >
               <option value="1st Floor">1st Floor</option>
               <option value="2nd Floor">2nd Floor</option>
@@ -129,7 +129,7 @@ const RoomManagement: React.FC<RoomManagementProps> = ({ onUpdate }) => {
           </div>
           {isEdit && (
             <div className="space-y-3 md:col-span-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Status</label>
+              <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-1">Status</label>
               <div className="grid grid-cols-3 gap-4">
                 {['Available', 'Maintenance', 'Full'].map((status) => (
                   <button
@@ -138,8 +138,8 @@ const RoomManagement: React.FC<RoomManagementProps> = ({ onUpdate }) => {
                     onClick={() => setFormData({...formData, status})}
                     className={`px-4 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${
                       formData.status === status 
-                        ? 'bg-violet-600 text-white shadow-lg shadow-violet-200 dark:shadow-none' 
-                        : 'bg-slate-50 dark:bg-slate-900 text-slate-400 border border-slate-100 dark:border-slate-800'
+                        ? 'bg-neutral-900 text-white shadow-lg shadow-neutral-300 dark:shadow-none' 
+                        : 'bg-neutral-50 dark:bg-neutral-900 text-neutral-400 border border-neutral-100 dark:border-neutral-800'
                     }`}
                   >
                     {status}
@@ -153,13 +153,13 @@ const RoomManagement: React.FC<RoomManagementProps> = ({ onUpdate }) => {
           <button 
             type="button"
             onClick={() => { setShowAddModal(false); setShowEditModal(false); }}
-            className="px-8 py-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+            className="px-8 py-4 rounded-2xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 font-black text-[10px] uppercase tracking-widest hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all"
           >
             Cancel
           </button>
           <button 
             disabled={isSubmitting}
-            className="px-10 py-4 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all disabled:opacity-50 shadow-xl shadow-slate-900/10"
+            className="px-10 py-4 rounded-2xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all disabled:opacity-50 shadow-xl shadow-neutral-900/10"
           >
             {isSubmitting ? 'Saving...' : isEdit ? 'Update Room' : 'Add Room'}
           </button>
@@ -195,32 +195,32 @@ const RoomManagement: React.FC<RoomManagementProps> = ({ onUpdate }) => {
         layout
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="glass-card p-8 rounded-[2.5rem] border border-white/20 dark:border-white/5 shadow-2xl hover:shadow-violet-500/5 transition-all group relative overflow-hidden"
+        className="glass-card p-8 rounded-[2.5rem] border border-white/20 dark:border-white/5 shadow-2xl hover:shadow-neutral-800/5 transition-all group relative overflow-hidden"
       >
         <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
-          <Home size={80} className="text-violet-500" />
+          <Home size={80} className="text-neutral-800" />
         </div>
 
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-5">
-            <div className={`p-4 rounded-2xl ${room.occupancy >= room.capacity ? 'bg-rose-500/10 text-rose-500' : 'bg-violet-500/10 text-violet-500'} group-hover:scale-110 transition-transform`}>
+            <div className={`p-4 rounded-2xl ${room.occupancy >= room.capacity ? 'bg-rose-500/10 text-rose-500' : 'bg-neutral-800/10 text-neutral-800'} group-hover:scale-110 transition-transform`}>
               <Home size={28} />
             </div>
             <div>
-              <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Room {room.room_number}</h3>
-              <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">{room.floor}</p>
+              <h3 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight">Room {room.room_number}</h3>
+              <p className="text-[10px] text-neutral-400 font-black uppercase tracking-[0.2em]">{room.floor}</p>
             </div>
           </div>
           <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
             <button 
               onClick={() => { setSelectedRoom(room); setShowEditModal(true); }}
-              className="p-3 text-slate-400 hover:text-violet-500 hover:bg-violet-500/10 rounded-xl transition-all"
+              className="p-3 text-neutral-400 hover:text-neutral-800 hover:bg-neutral-800/10 rounded-xl transition-all"
             >
               <Edit2 size={18} />
             </button>
             <button 
               onClick={() => setShowDeleteConfirm(room.id)}
-              className="p-3 text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all"
+              className="p-3 text-neutral-400 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all"
             >
               <Trash2 size={18} />
             </button>
@@ -230,12 +230,12 @@ const RoomManagement: React.FC<RoomManagementProps> = ({ onUpdate }) => {
         <div className="space-y-6">
           <div className="space-y-3">
             <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest">
-              <span className="text-slate-400">Occupancy</span>
-              <span className={room.occupancy >= room.capacity ? 'text-rose-500' : 'text-slate-900 dark:text-white'}>
+              <span className="text-neutral-400">Occupancy</span>
+              <span className={room.occupancy >= room.capacity ? 'text-rose-500' : 'text-neutral-900 dark:text-white'}>
                 {room.occupancy} / {room.capacity}
               </span>
             </div>
-            <div className="w-full h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-0.5">
+            <div className="w-full h-3 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden p-0.5">
               <motion.div 
                 initial={{ width: 0 }}
                 animate={{ width: `${occupancyPercent}%` }}
@@ -247,27 +247,27 @@ const RoomManagement: React.FC<RoomManagementProps> = ({ onUpdate }) => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center justify-between pt-6 border-t border-neutral-100 dark:border-neutral-800">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-slate-50 dark:bg-slate-900 rounded-lg">
-                <Layers size={14} className="text-slate-400" />
+              <div className="p-2 bg-neutral-50 dark:bg-neutral-900 rounded-lg">
+                <Layers size={14} className="text-neutral-400" />
               </div>
-              <span className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">{room.type}</span>
+              <span className="text-[10px] font-black text-neutral-600 dark:text-neutral-400 uppercase tracking-widest">{room.type}</span>
             </div>
             <div className="flex items-center gap-3">
               <div className={`w-2 h-2 rounded-full animate-pulse ${
                 room.status === 'Available' ? 'bg-emerald-500' : 
                 room.status === 'Full' ? 'bg-rose-500' : 'bg-amber-500'
               }`} />
-              <span className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">{room.status}</span>
+              <span className="text-[10px] font-black text-neutral-600 dark:text-neutral-400 uppercase tracking-widest">{room.status}</span>
             </div>
           </div>
 
           {room.occupancy > 0 && (
-            <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
+            <div className="pt-6 border-t border-neutral-100 dark:border-neutral-800">
               <button 
                 onClick={() => setShowStudents(!showStudents)}
-                className="flex items-center gap-2 text-[10px] font-black text-violet-500 hover:text-violet-600 uppercase tracking-widest transition-all group/btn"
+                className="flex items-center gap-2 text-[10px] font-black text-neutral-800 hover:text-neutral-900 uppercase tracking-widest transition-all group/btn"
               >
                 <Users size={16} className="group-hover/btn:scale-110 transition-transform" />
                 {showStudents ? 'Hide Occupants' : 'View Occupants'}
@@ -282,10 +282,10 @@ const RoomManagement: React.FC<RoomManagementProps> = ({ onUpdate }) => {
                     className="mt-4 space-y-3 overflow-hidden"
                   >
                     {roomStudents.map(s => (
-                      <div key={s.id} className="flex items-center justify-between p-4 bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl border border-slate-100/50 dark:border-slate-800/50">
+                      <div key={s.id} className="flex items-center justify-between p-4 bg-neutral-50/50 dark:bg-neutral-900/50 rounded-2xl border border-neutral-100/50 dark:border-neutral-800/50">
                         <div className="flex flex-col">
-                          <span className="text-xs font-black text-slate-900 dark:text-white">{s.full_name}</span>
-                          <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest mt-0.5">{s.student_id}</span>
+                          <span className="text-xs font-black text-neutral-900 dark:text-white">{s.full_name}</span>
+                          <span className="text-[9px] text-neutral-400 font-black uppercase tracking-widest mt-0.5">{s.student_id}</span>
                         </div>
                         <div className={`w-2 h-2 rounded-full ${s.status === 'Active' ? 'bg-emerald-500' : 'bg-rose-500'}`} />
                       </div>
@@ -304,15 +304,15 @@ const RoomManagement: React.FC<RoomManagementProps> = ({ onUpdate }) => {
     <div className="space-y-10 animate-fade-in">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-            <Zap className="text-violet-500" size={32} />
+          <h2 className="text-3xl font-black text-neutral-900 dark:text-white tracking-tight flex items-center gap-3">
+            <Zap className="text-neutral-800" size={32} />
             Room Inventory
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">Manage hostel rooms, capacity, and occupancy in real-time.</p>
+          <p className="text-neutral-500 dark:text-neutral-400 mt-1 font-medium">Manage hostel rooms, capacity, and occupancy in real-time.</p>
         </div>
         <button 
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-3 px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-slate-900/10"
+          className="flex items-center gap-3 px-8 py-4 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-neutral-900/10"
         >
           <Plus size={20} />
           Add New Room
@@ -336,31 +336,31 @@ const RoomManagement: React.FC<RoomManagementProps> = ({ onUpdate }) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => { setShowAddModal(false); setShowEditModal(false); }}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-xl"
+              className="absolute inset-0 bg-neutral-900/60 backdrop-blur-xl"
             />
             <motion.div 
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white dark:bg-slate-800 w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden relative border border-white/20 dark:border-white/5"
+              className="bg-white dark:bg-neutral-800 w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden relative border border-white/20 dark:border-white/5"
             >
-              <div className="p-10 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
+              <div className="p-10 border-b border-neutral-100 dark:border-neutral-700 flex items-center justify-between bg-neutral-50/50 dark:bg-neutral-900/50">
                 <div className="flex items-center gap-4">
-                  <div className="p-4 bg-violet-500/10 text-violet-500 rounded-2xl">
+                  <div className="p-4 bg-neutral-800/10 text-neutral-800 rounded-2xl">
                     <Sparkles size={24} />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                    <h2 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight">
                       {showEditModal ? 'Edit Room' : 'New Room'}
                     </h2>
-                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Configure room parameters</p>
+                    <p className="text-[10px] text-neutral-400 font-black uppercase tracking-widest">Configure room parameters</p>
                   </div>
                 </div>
                 <button 
                   onClick={() => { setShowAddModal(false); setShowEditModal(false); }}
-                  className="p-3 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-2xl transition-all"
+                  className="p-3 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-2xl transition-all"
                 >
-                  <X size={24} className="text-slate-400" />
+                  <X size={24} className="text-neutral-400" />
                 </button>
               </div>
               <div className="p-10">
@@ -378,25 +378,25 @@ const RoomManagement: React.FC<RoomManagementProps> = ({ onUpdate }) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowDeleteConfirm(null)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-xl"
+              className="absolute inset-0 bg-neutral-900/60 backdrop-blur-xl"
             />
             <motion.div 
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white dark:bg-slate-800 w-full max-w-md rounded-[3rem] shadow-2xl overflow-hidden relative border border-white/20 dark:border-white/5 p-10 text-center"
+              className="bg-white dark:bg-neutral-800 w-full max-w-md rounded-[3rem] shadow-2xl overflow-hidden relative border border-white/20 dark:border-white/5 p-10 text-center"
             >
               <div className="w-20 h-20 bg-rose-500/10 text-rose-500 rounded-3xl flex items-center justify-center mx-auto mb-8">
                 <AlertTriangle size={40} />
               </div>
-              <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-4">Delete Room?</h3>
-              <p className="text-slate-500 dark:text-slate-400 font-medium mb-10">
+              <h3 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight mb-4">Delete Room?</h3>
+              <p className="text-neutral-500 dark:text-neutral-400 font-medium mb-10">
                 This action cannot be undone. All room data will be permanently removed.
               </p>
               <div className="flex gap-4">
                 <button 
                   onClick={() => setShowDeleteConfirm(null)}
-                  className="flex-1 px-8 py-4 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-600 transition-all"
+                  className="flex-1 px-8 py-4 bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-all"
                 >
                   Cancel
                 </button>

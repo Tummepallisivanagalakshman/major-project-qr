@@ -87,31 +87,31 @@ const PaymentManagement: React.FC<PaymentManagementProps> = React.memo(({ onUpda
       <form onSubmit={handleSubmit} className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-3">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Student Identifier</label>
+            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-1">Student Identifier</label>
             <input 
               required
               value={formData.student_id}
               onChange={e => setFormData({...formData, student_id: e.target.value})}
-              className="w-full px-6 py-4 rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-violet-500 outline-none transition-all dark:text-white font-bold"
+              className="w-full px-6 py-4 rounded-2xl border border-neutral-100 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-neutral-800 outline-none transition-all dark:text-white font-bold"
               placeholder="e.g. STU123"
             />
           </div>
           <div className="space-y-3">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Transaction Amount (₹)</label>
+            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-1">Transaction Amount (₹)</label>
             <input 
               required
               type="number"
               value={formData.amount}
               onChange={e => setFormData({...formData, amount: parseFloat(e.target.value)})}
-              className="w-full px-6 py-4 rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-violet-500 outline-none transition-all dark:text-white font-bold"
+              className="w-full px-6 py-4 rounded-2xl border border-neutral-100 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-neutral-800 outline-none transition-all dark:text-white font-bold"
             />
           </div>
           <div className="space-y-3">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Payment Method</label>
+            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-1">Payment Method</label>
             <select 
               value={formData.mode}
               onChange={e => setFormData({...formData, mode: e.target.value})}
-              className="w-full px-6 py-4 rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-violet-500 outline-none transition-all dark:text-white font-bold appearance-none"
+              className="w-full px-6 py-4 rounded-2xl border border-neutral-100 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-neutral-800 outline-none transition-all dark:text-white font-bold appearance-none"
             >
               <option value="Cash">Cash</option>
               <option value="UPI">UPI</option>
@@ -120,11 +120,11 @@ const PaymentManagement: React.FC<PaymentManagementProps> = React.memo(({ onUpda
             </select>
           </div>
           <div className="space-y-3">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Transaction Status</label>
+            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-1">Transaction Status</label>
             <select 
               value={formData.status}
               onChange={e => setFormData({...formData, status: e.target.value})}
-              className="w-full px-6 py-4 rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-violet-500 outline-none transition-all dark:text-white font-bold appearance-none"
+              className="w-full px-6 py-4 rounded-2xl border border-neutral-100 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-neutral-800 outline-none transition-all dark:text-white font-bold appearance-none"
             >
               <option value="Success">Success</option>
               <option value="Pending">Pending</option>
@@ -132,13 +132,13 @@ const PaymentManagement: React.FC<PaymentManagementProps> = React.memo(({ onUpda
             </select>
           </div>
           <div className="space-y-3 md:col-span-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Transaction Date</label>
+            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] ml-1">Transaction Date</label>
             <input 
               required
               type="date"
               value={formData.date}
               onChange={e => setFormData({...formData, date: e.target.value})}
-              className="w-full px-6 py-4 rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-violet-500 outline-none transition-all dark:text-white font-bold"
+              className="w-full px-6 py-4 rounded-2xl border border-neutral-100 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-neutral-800 outline-none transition-all dark:text-white font-bold"
             />
           </div>
         </div>
@@ -146,13 +146,13 @@ const PaymentManagement: React.FC<PaymentManagementProps> = React.memo(({ onUpda
           <button 
             type="button"
             onClick={() => setShowAddModal(false)}
-            className="px-8 py-4 rounded-2xl border border-slate-100 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-black uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
+            className="px-8 py-4 rounded-2xl border border-neutral-100 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400 font-black uppercase tracking-widest hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all"
           >
             Cancel
           </button>
           <button 
             disabled={isSubmitting}
-            className="px-10 py-4 rounded-2xl bg-violet-600 text-white font-black uppercase tracking-widest hover:bg-violet-700 shadow-xl shadow-violet-500/20 transition-all disabled:opacity-50 flex items-center gap-2"
+            className="px-10 py-4 rounded-2xl bg-neutral-900 text-white font-black uppercase tracking-widest hover:bg-neutral-950 shadow-xl shadow-neutral-800/20 transition-all disabled:opacity-50 flex items-center gap-2"
           >
             {isSubmitting ? 'Processing...' : (
               <>
@@ -171,7 +171,7 @@ const PaymentManagement: React.FC<PaymentManagementProps> = React.memo(({ onUpda
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {[
           { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString()}`, icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/10', trend: '+12.5%', trendIcon: ArrowUpRight },
-          { label: 'Avg. Payment', value: `₹${(totalRevenue / (payments.length || 1)).toFixed(0)}`, icon: DollarSign, color: 'text-violet-500', bg: 'bg-violet-500/10', trend: '+5.2%', trendIcon: ArrowUpRight },
+          { label: 'Avg. Payment', value: `₹${(totalRevenue / (payments.length || 1)).toFixed(0)}`, icon: DollarSign, color: 'text-neutral-800', bg: 'bg-neutral-800/10', trend: '+5.2%', trendIcon: ArrowUpRight },
           { label: 'Pending Entries', value: payments.filter(p => p.status === 'Pending').length, icon: Activity, color: 'text-amber-500', bg: 'bg-amber-500/10', trend: '-2.4%', trendIcon: ArrowDownRight }
         ].map((stat, i) => (
           <motion.div 
@@ -191,8 +191,8 @@ const PaymentManagement: React.FC<PaymentManagementProps> = React.memo(({ onUpda
               </div>
             </div>
             <div>
-              <h3 className="text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mb-1">{stat.label}</h3>
-              <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{stat.value}</p>
+              <h3 className="text-neutral-500 dark:text-neutral-400 text-[10px] font-black uppercase tracking-[0.2em] mb-1">{stat.label}</h3>
+              <p className="text-3xl font-black text-neutral-900 dark:text-white tracking-tight">{stat.value}</p>
             </div>
           </motion.div>
         ))}
@@ -200,21 +200,21 @@ const PaymentManagement: React.FC<PaymentManagementProps> = React.memo(({ onUpda
 
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div className="relative flex-1 max-w-full lg:max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={20} />
           <input 
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm focus:ring-2 focus:ring-violet-500 outline-none transition-all dark:text-white text-sm"
+            className="w-full pl-12 pr-4 py-4 rounded-2xl border border-neutral-100 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-sm focus:ring-2 focus:ring-neutral-800 outline-none transition-all dark:text-white text-sm"
             placeholder="Search by student name or ID..."
           />
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
           <div className="relative">
-            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={16} />
             <select 
               value={filterStatus}
               onChange={e => setFilterStatus(e.target.value as any)}
-              className="pl-10 pr-8 py-4 rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm outline-none font-black text-slate-600 dark:text-slate-400 text-[10px] uppercase tracking-widest appearance-none min-w-[160px]"
+              className="pl-10 pr-8 py-4 rounded-2xl border border-neutral-100 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-sm outline-none font-black text-neutral-600 dark:text-neutral-400 text-[10px] uppercase tracking-widest appearance-none min-w-[160px]"
             >
               <option value="All">All Status</option>
               <option value="Success">Success</option>
@@ -224,7 +224,7 @@ const PaymentManagement: React.FC<PaymentManagementProps> = React.memo(({ onUpda
           </div>
           <button 
             onClick={() => setShowAddModal(true)}
-            className="flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-slate-900/10"
+            className="flex items-center justify-center gap-3 px-8 py-4 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-2xl font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-neutral-900/10"
           >
             <Plus size={20} />
             Manual Entry
@@ -236,7 +236,7 @@ const PaymentManagement: React.FC<PaymentManagementProps> = React.memo(({ onUpda
         <div className="overflow-x-auto custom-scrollbar">
           <table className="w-full text-left border-collapse min-w-[900px]">
             <thead>
-              <tr className="bg-slate-50/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-[0.2em] font-black">
+              <tr className="bg-neutral-50/50 dark:bg-neutral-800/50 text-neutral-500 dark:text-neutral-400 text-[10px] uppercase tracking-[0.2em] font-black">
                 <th className="px-8 py-6">Student Details</th>
                 <th className="px-8 py-6">Amount</th>
                 <th className="px-8 py-6">Date & Method</th>
@@ -244,32 +244,32 @@ const PaymentManagement: React.FC<PaymentManagementProps> = React.memo(({ onUpda
                 <th className="px-8 py-6 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
               {filteredPayments.map((p, i) => (
                 <motion.tr 
                   key={p.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors group"
+                  className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/50 transition-colors group"
                 >
                   <td className="px-8 py-6">
                     <div className="flex flex-col">
-                      <span className="font-bold text-slate-900 dark:text-white text-base tracking-tight">{p.full_name}</span>
-                      <span className="text-xs text-slate-400 font-mono tracking-tighter">{p.student_id}</span>
+                      <span className="font-bold text-neutral-900 dark:text-white text-base tracking-tight">{p.full_name}</span>
+                      <span className="text-xs text-neutral-400 font-mono tracking-tighter">{p.student_id}</span>
                     </div>
                   </td>
                   <td className="px-8 py-6">
-                    <div className="text-lg font-black text-slate-900 dark:text-white">₹{p.amount.toLocaleString()}</div>
+                    <div className="text-lg font-black text-neutral-900 dark:text-white">₹{p.amount.toLocaleString()}</div>
                   </td>
                   <td className="px-8 py-6">
                     <div className="space-y-1">
-                      <div className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                        <Calendar size={14} className="text-slate-400" />
+                      <div className="text-sm font-bold text-neutral-700 dark:text-neutral-300 flex items-center gap-2">
+                        <Calendar size={14} className="text-neutral-400" />
                         {p.date}
                       </div>
-                      <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <CreditCard size={14} className="text-slate-400" />
+                      <div className="text-[10px] font-black text-neutral-400 uppercase tracking-widest flex items-center gap-2">
+                        <CreditCard size={14} className="text-neutral-400" />
                         {p.mode}
                       </div>
                     </div>
@@ -285,7 +285,7 @@ const PaymentManagement: React.FC<PaymentManagementProps> = React.memo(({ onUpda
                     </div>
                   </td>
                   <td className="px-8 py-6 text-right">
-                    <button className="p-3 text-slate-400 hover:text-violet-500 hover:bg-violet-500/10 rounded-xl transition-all" title="View Receipt">
+                    <button className="p-3 text-neutral-400 hover:text-neutral-800 hover:bg-neutral-800/10 rounded-xl transition-all" title="View Receipt">
                       <FileText size={20} />
                     </button>
                   </td>
@@ -304,27 +304,27 @@ const PaymentManagement: React.FC<PaymentManagementProps> = React.memo(({ onUpda
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowAddModal(false)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+              className="absolute inset-0 bg-neutral-900/60 backdrop-blur-md"
             />
             <motion.div 
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-[3rem] shadow-2xl relative overflow-hidden border border-white/20 dark:border-white/5"
+              className="bg-white dark:bg-neutral-900 w-full max-w-2xl rounded-[3rem] shadow-2xl relative overflow-hidden border border-white/20 dark:border-white/5"
             >
-              <div className="p-10 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
+              <div className="p-10 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between bg-neutral-50/50 dark:bg-neutral-800/50">
                 <div>
-                  <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-                    <Sparkles className="text-violet-500" size={28} />
+                  <h2 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight flex items-center gap-3">
+                    <Sparkles className="text-neutral-800" size={28} />
                     Manual Transaction
                   </h2>
-                  <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1">Record a new payment entry manually into the system.</p>
+                  <p className="text-neutral-500 dark:text-neutral-400 text-sm font-medium mt-1">Record a new payment entry manually into the system.</p>
                 </div>
                 <button 
                   onClick={() => setShowAddModal(false)}
-                  className="p-3 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-2xl transition-all"
+                  className="p-3 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-2xl transition-all"
                 >
-                  <X size={24} className="text-slate-400" />
+                  <X size={24} className="text-neutral-400" />
                 </button>
               </div>
               <div className="p-10">

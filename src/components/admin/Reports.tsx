@@ -66,23 +66,23 @@ const Reports: React.FC = () => {
     <div className="space-y-10 animate-fade-in">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-            <Activity className="text-violet-500" size={32} />
+          <h2 className="text-3xl font-black text-neutral-900 dark:text-white tracking-tight flex items-center gap-3">
+            <Activity className="text-neutral-800" size={32} />
             Analytics Dashboard
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">Deep insights into hostel operations, revenue, and student engagement.</p>
+          <p className="text-neutral-500 dark:text-neutral-400 mt-1 font-medium">Deep insights into hostel operations, revenue, and student engagement.</p>
         </div>
         <div className="flex items-center gap-4">
           <button 
             onClick={exportCSV}
-            className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all font-black text-[10px] uppercase tracking-widest"
+            className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 rounded-2xl border border-neutral-100 dark:border-neutral-700 shadow-sm hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all font-black text-[10px] uppercase tracking-widest"
           >
             <Download size={18} />
             Export CSV
           </button>
           <button 
             onClick={() => window.print()}
-            className="flex items-center gap-2 px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl shadow-xl shadow-slate-900/10 hover:scale-105 transition-all font-black text-[10px] uppercase tracking-widest"
+            className="flex items-center gap-2 px-6 py-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-2xl shadow-xl shadow-neutral-900/10 hover:scale-105 transition-all font-black text-[10px] uppercase tracking-widest"
           >
             <FileText size={18} />
             Print Report
@@ -97,7 +97,7 @@ const Reports: React.FC = () => {
           className="glass-card p-8 rounded-[2.5rem] border border-white/20 dark:border-white/5 shadow-2xl"
         >
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+            <h3 className="text-xl font-black text-neutral-900 dark:text-white tracking-tight flex items-center gap-3">
               <TrendingUp size={24} className="text-emerald-500" />
               Revenue Trends
             </h3>
@@ -160,7 +160,7 @@ const Reports: React.FC = () => {
           className="glass-card p-8 rounded-[2.5rem] border border-white/20 dark:border-white/5 shadow-2xl"
         >
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+            <h3 className="text-xl font-black text-neutral-900 dark:text-white tracking-tight flex items-center gap-3">
               <Zap size={24} className="text-amber-500" />
               Meal Engagement
             </h3>
@@ -210,11 +210,11 @@ const Reports: React.FC = () => {
 
       <div className="glass-card p-10 rounded-[3rem] border border-white/20 dark:border-white/5 shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none">
-          <Sparkles size={120} className="text-violet-500" />
+          <Sparkles size={120} className="text-neutral-800" />
         </div>
         
-        <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-10 flex items-center gap-3">
-          <Target size={28} className="text-violet-500" />
+        <h3 className="text-2xl font-black text-neutral-900 dark:text-white mb-10 flex items-center gap-3">
+          <Target size={28} className="text-neutral-800" />
           Executive Summary
         </h3>
         
@@ -222,23 +222,23 @@ const Reports: React.FC = () => {
           {[
             { label: 'Growth', value: '+12.5%', icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/10', desc: 'Compared to last month' },
             { label: 'Defaulters', value: '4.2%', icon: TrendingDown, color: 'text-rose-500', bg: 'bg-rose-500/10', desc: 'Students with overdue payments' },
-            { label: 'Occupancy', value: '88%', icon: PieIcon, color: 'text-violet-500', bg: 'bg-violet-500/10', desc: 'Total capacity utilized' }
+            { label: 'Occupancy', value: '88%', icon: PieIcon, color: 'text-neutral-800', bg: 'bg-neutral-800/10', desc: 'Total capacity utilized' }
           ].map((metric, i) => (
             <motion.div 
               key={i}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.1 }}
-              className="relative group p-6 rounded-3xl bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100/50 dark:border-slate-700/50 hover:border-violet-500/30 transition-all"
+              className="relative group p-6 rounded-3xl bg-neutral-50/50 dark:bg-neutral-800/50 border border-neutral-100/50 dark:border-neutral-700/50 hover:border-neutral-800/30 transition-all"
             >
               <div className="flex items-center gap-4 mb-4">
                 <div className={`p-4 ${metric.bg} ${metric.color} rounded-2xl group-hover:scale-110 transition-transform`}>
                   <metric.icon size={24} />
                 </div>
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{metric.label}</span>
+                <span className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">{metric.label}</span>
               </div>
-              <div className="text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-2">{metric.value}</div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{metric.desc}</p>
+              <div className="text-4xl font-black text-neutral-900 dark:text-white tracking-tight mb-2">{metric.value}</div>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{metric.desc}</p>
             </motion.div>
           ))}
         </div>
