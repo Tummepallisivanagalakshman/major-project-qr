@@ -137,48 +137,58 @@ export const getPayments = async (studentId: string) => {
   return data;
 };
 
-export const makePayment = async (studentId: string, amount: number, mode: string) => {
-  const date = new Date().toISOString().split('T')[0];
+export const makePayment = async (studentId: string, amount: number, mode: string, dateOverride?: string, statusOverride?: string) => {
+  const date = dateOverride || new Date().toISOString().split('T')[0];
+  const status = statusOverride || 'Success';
 
   // 1. Record Payment
   const { data: paymentData, error: paymentError } = await insforge.database
     .from('payments')
     .insert([
-      { student_id: studentId, amount, date, mode, status: 'Success' },
+      { student_id: studentId, amount, date, mode, status },
     ])
     .select()
     .single();
 
   if (paymentError) throw paymentError;
 
-  // 2. Update Profile (Paid Amount)
-  // Note: In a production app, this should ideally be handled by a DB trigger/function
-  // for atomic updates to avoid race conditions.
-  const { data: currentProfile } = await insforge.database
-    .from('profiles')
-    .select('paid_amount')
-    .eq('student_id', studentId)
-    .single();
+  // 2. Update Profile (Paid Amount) ONLY IF SUCCESS
+  if (status === 'Success') {
+    // Note: In a production app, this should ideally be handled by a DB trigger/function
+    // for atomic updates to avoid race conditions.
+    const { data: currentProfile } = await insforge.database
+      .from('profiles')
+      .select('paid_amount')
+      .eq('student_id', studentId)
+      .single();
 
-  const newPaidAmount = (currentProfile?.paid_amount || 0) + amount;
+    const currentPaid = Number(currentProfile?.paid_amount || 0);
+    const newPaidAmount = currentPaid + amount;
 
-  const { error: updateError } = await insforge.database
-    .from('profiles')
-    .update({ paid_amount: newPaidAmount })
-    .eq('student_id', studentId);
+    const { error: updateError } = await insforge.database
+      .from('profiles')
+      .update({ paid_amount: newPaidAmount })
+      .eq('student_id', studentId);
 
-  if (updateError) throw updateError;
+    if (updateError) throw updateError;
+  }
 
   return paymentData;
 };
 
-export const getNotifications = async (studentId: string) => {
-  const { data, error } = await insforge.database
+export const getNotifications = async (studentId?: string) => {
+  const query = insforge.database
     .from('notifications')
     .select('*')
-    .or(`student_id.eq.${studentId},student_id.is.null`)
     .order('date', { ascending: false });
+    
+  if (studentId) {
+    query.or(`student_id.eq.${studentId},student_id.is.null`);
+  } else {
+    query.is('student_id', null);
+  }
 
+  const { data, error } = await query;
   if (error) throw error;
   return data;
 };
@@ -354,7 +364,8 @@ export const getMealStats = async () => {
 export const getRevenueStats = async () => {
   const { data, error } = await insforge.database
     .from('payments')
-    .select('date, amount');
+    .select('date, amount')
+    .eq('status', 'Success');
   
   if (error) throw error;
 
@@ -373,7 +384,7 @@ export const getAdminStats = async () => {
 
   const [{ data: profiles }, { data: payments }, { data: mealRecords }, { data: rooms }] = await Promise.all([
     insforge.database.from('profiles').select('status, total_fees, paid_amount').eq('role', 'student'),
-    insforge.database.from('payments').select('amount'),
+    insforge.database.from('payments').select('amount').eq('status', 'Success'),
     insforge.database.from('meal_records').select('meal_type').eq('date', today),
     insforge.database.from('rooms').select('room_number, capacity')
   ]);
@@ -520,7 +531,18 @@ export const getAllMealLogs = async () => {
     ...l,
     username: Array.isArray(l.profiles) ? l.profiles[0]?.full_name : l.profiles?.full_name || l.profiles?.username || 'Unknown student'
   }));
-};export const broadcastNotification = async (notif: { title: string, message: string, type: string, student_id?: string }) => {
+};
+
+export const getAllNotifications = async () => {
+  const { data, error } = await insforge.database
+    .from('notifications')
+    .select('*')
+    .order('date', { ascending: false });
+  if (error) throw error;
+  return data;
+};
+
+export const broadcastNotification = async (notif: { title: string, message: string, type: string, student_id?: string }) => {
   const date = new Date().toISOString().split('T')[0];
   const { data, error } = await insforge.database
     .from('notifications')

@@ -71,7 +71,7 @@ const PaymentManagement: React.FC<PaymentManagementProps> = React.memo(({ onUpda
       e.preventDefault();
       setIsSubmitting(true);
       try {
-        await api.makePayment(formData.student_id, formData.amount, formData.mode);
+        await api.makePayment(formData.student_id, formData.amount, formData.mode, formData.date, formData.status);
         toast.success('Payment recorded successfully!');
         setShowAddModal(false);
         fetchPayments();

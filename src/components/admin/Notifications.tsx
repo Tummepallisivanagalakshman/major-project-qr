@@ -15,6 +15,21 @@ const Notifications: React.FC = () => {
   const [type, setType] = useState('admin');
   const [isSending, setIsSending] = useState(false);
 
+  const [notifications, setNotifications] = useState<any[]>([]);
+
+  const fetchNotifications = async () => {
+    try {
+      const data = await api.getAllNotifications();
+      setNotifications(data || []);
+    } catch (err) {
+      toast.error('Failed to fetch notifications');
+    }
+  };
+
+  React.useEffect(() => {
+    fetchNotifications();
+  }, []);
+
   const handleBroadcast = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSending(true);
@@ -30,6 +45,7 @@ const Notifications: React.FC = () => {
       });
       setTitle('');
       setMessage('');
+      fetchNotifications();
     } catch (err: any) {
       toast.error(err.message || 'Error broadcasting announcement');
     } finally {
@@ -182,30 +198,39 @@ const Notifications: React.FC = () => {
             </div>
           </div>
 
-          <div className="glass-card p-8 rounded-[2.5rem] border border-white/20 dark:border-white/5 shadow-xl">
-            <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-3">
+          <div className="glass-card p-8 rounded-[2.5rem] border border-white/20 dark:border-white/5 shadow-xl h-[500px] overflow-y-auto custom-scrollbar">
+            <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-3 sticky top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md pb-4 z-10">
               <History size={24} className="text-slate-400" />
               Recent Activity
             </h3>
             <div className="space-y-4">
-              {[
-                { title: 'Maintenance Update', stats: '124 students', time: '2 hours ago', type: 'admin', color: 'text-blue-500', bg: 'bg-blue-500/10' },
-                { title: 'Fee Reminder', stats: '124 students', time: '1 day ago', type: 'payment', color: 'text-emerald-500', bg: 'bg-emerald-500/10' }
-              ].map((log, i) => (
-                <div key={i} className="flex gap-4 p-5 bg-slate-50/50 dark:bg-slate-800/50 rounded-2xl border border-slate-100/50 dark:border-slate-700/50 group hover:border-violet-500/30 transition-colors">
-                  <div className={`p-3 ${log.bg} ${log.color} rounded-xl h-fit group-hover:scale-110 transition-transform`}>
-                    {log.type === 'admin' ? <Info size={18} /> : <CreditCard size={18} />}
+              {notifications.map((log) => (
+                <div key={log.id} className="flex gap-4 p-5 bg-slate-50/50 dark:bg-slate-800/50 rounded-2xl border border-slate-100/50 dark:border-slate-700/50 group hover:border-violet-500/30 transition-colors">
+                  <div className={`p-3 rounded-xl h-fit group-hover:scale-110 transition-transform ${
+                    log.type === 'admin' ? 'bg-blue-500/10 text-blue-500' :
+                    log.type === 'emergency' ? 'bg-rose-500/10 text-rose-500' :
+                    'bg-emerald-500/10 text-emerald-500'
+                  }`}>
+                    {log.type === 'admin' ? <Info size={18} /> : 
+                     log.type === 'emergency' ? <AlertTriangle size={18} /> : 
+                     <CreditCard size={18} />}
                   </div>
                   <div>
                     <h4 className="font-black text-sm text-slate-800 dark:text-white tracking-tight">{log.title}</h4>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sent to {log.stats}</span>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-2 line-clamp-2">{log.message}</p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        {log.student_id ? `Student: ${log.student_id}` : 'All Students'}
+                      </span>
                       <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{log.time}</span>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{log.date}</span>
                     </div>
                   </div>
                 </div>
               ))}
+              {notifications.length === 0 && (
+                <p className="text-center text-slate-500 text-sm py-4">No notifications yet.</p>
+              )}
             </div>
           </div>
         </motion.div>

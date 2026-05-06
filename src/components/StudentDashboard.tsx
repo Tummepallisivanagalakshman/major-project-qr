@@ -155,7 +155,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
     const loadingToast = toast.loading("Processing secure transaction...");
     try {
       const data = await api.makePayment(user.student_id, amount, 'UPI');
-      onUpdateUser({ ...user, paid_amount: (user.paid_amount || 0) + amount });
+      onUpdateUser({ ...user, paid_amount: Number(user.paid_amount || 0) + amount });
       toast.success('Transaction Successful!', { id: loadingToast });
       
       const today = new Date().toISOString().split('T')[0];
@@ -1067,26 +1067,50 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
                     <motion.div 
                       key={n.id}
                       whileHover={{ y: -5 }}
-                      className="glass-card p-8 rounded-[2rem] border border-slate-100 dark:border-slate-800/50 shadow-sm hover:shadow-xl transition-all group"
+                      className="glass-card p-8 rounded-[2rem] border border-slate-100 dark:border-slate-800/50 shadow-sm hover:shadow-2xl transition-all group relative overflow-hidden"
                     >
-                      <div className="flex items-start gap-6">
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform ${
-                          n.type === 'payment' ? 'bg-rose-500/10 text-rose-600' : 'bg-violet-500/10 text-violet-600'
+                      <div className={`absolute top-0 right-0 w-32 h-32 blur-3xl rounded-full opacity-20 -z-10 transition-transform group-hover:scale-150 ${
+                        n.type === 'emergency' ? 'bg-rose-500' :
+                        n.type === 'payment' ? 'bg-emerald-500' :
+                        n.type === 'admin' ? 'bg-blue-500' : 'bg-violet-500'
+                      }`} />
+                      <div className="flex items-start gap-6 relative z-10">
+                        <div className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-lg ${
+                          n.type === 'emergency' ? 'bg-rose-500 text-white shadow-rose-500/30' :
+                          n.type === 'payment' ? 'bg-emerald-500 text-white shadow-emerald-500/30' :
+                          n.type === 'admin' ? 'bg-blue-500 text-white shadow-blue-500/30' : 'bg-violet-500 text-white shadow-violet-500/30'
                         }`}>
-                          {n.type === 'payment' ? <AlertTriangle size={24} /> : <Bell size={24} />}
+                          {n.type === 'emergency' ? <AlertTriangle size={28} /> : 
+                           n.type === 'payment' ? <CreditCard size={28} /> : 
+                           n.type === 'admin' ? <Info size={28} /> : <Bell size={28} />}
                         </div>
                         <div className="flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <h5 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">{n.title}</h5>
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{n.date}</span>
+                          <div className="flex items-center justify-between mb-3">
+                            <h5 className="text-xl font-black text-slate-900 dark:text-white tracking-tight group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">{n.title}</h5>
+                            <div className="flex items-center gap-3">
+                              <span className={`px-3 py-1 text-[9px] font-black uppercase tracking-[0.2em] rounded-full border ${
+                                n.type === 'emergency' ? 'text-rose-600 bg-rose-50 border-rose-200 dark:bg-rose-500/10 dark:border-rose-500/20' :
+                                n.type === 'payment' ? 'text-emerald-600 bg-emerald-50 border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/20' :
+                                n.type === 'admin' ? 'text-blue-600 bg-blue-50 border-blue-200 dark:bg-blue-500/10 dark:border-blue-500/20' : 'text-violet-600 bg-violet-50 border-violet-200 dark:bg-violet-500/10 dark:border-violet-500/20'
+                              }`}>
+                                {n.type || 'Update'}
+                              </span>
+                            </div>
                           </div>
-                          <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm font-medium">{n.message}</p>
-                          <div className="mt-6 flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-slate-400">
-                              <Calendar size={12} />
+                          <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm font-medium pr-8">{n.message}</p>
+                          <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800/50 flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-slate-400 group-hover:text-slate-500 dark:group-hover:text-slate-300 transition-colors">
+                              <Calendar size={14} />
                               <span className="text-[10px] font-black uppercase tracking-widest">{n.date}</span>
                             </div>
-                            <button className="text-[10px] font-black text-violet-600 uppercase tracking-widest hover:underline">Read More</button>
+                            <button className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all ${
+                              n.type === 'emergency' ? 'text-rose-600 hover:text-rose-700' :
+                              n.type === 'payment' ? 'text-emerald-600 hover:text-emerald-700' :
+                              n.type === 'admin' ? 'text-blue-600 hover:text-blue-700' : 'text-violet-600 hover:text-violet-700'
+                            }`}>
+                              Mark as read
+                              <CheckCircle size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </button>
                           </div>
                         </div>
                       </div>

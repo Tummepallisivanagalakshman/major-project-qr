@@ -119,8 +119,20 @@ END $$;
 -- General Data (Selectable by all logged in users)
 DO $$ BEGIN
   CREATE POLICY "Rooms viewable by authenticated." ON public.rooms FOR SELECT USING (auth.role() = 'authenticated');
+  CREATE POLICY "Rooms insertable by admin." ON public.rooms FOR INSERT WITH CHECK (public.is_admin());
+  CREATE POLICY "Rooms updateable by admin." ON public.rooms FOR UPDATE USING (public.is_admin());
+  CREATE POLICY "Rooms deletable by admin." ON public.rooms FOR DELETE USING (public.is_admin());
+
   CREATE POLICY "Rules viewable by authenticated." ON public.rules FOR SELECT USING (auth.role() = 'authenticated');
+  CREATE POLICY "Rules insertable by admin." ON public.rules FOR INSERT WITH CHECK (public.is_admin());
+  CREATE POLICY "Rules updateable by admin." ON public.rules FOR UPDATE USING (public.is_admin());
+  CREATE POLICY "Rules deletable by admin." ON public.rules FOR DELETE USING (public.is_admin());
+
   CREATE POLICY "Menu viewable by authenticated." ON public.menu FOR SELECT USING (auth.role() = 'authenticated');
   CREATE POLICY "Menu updateable by admin." ON public.menu FOR UPDATE USING (public.is_admin());
   CREATE POLICY "Menu insertable by admin." ON public.menu FOR INSERT WITH CHECK (public.is_admin());
+
+  CREATE POLICY "Notifications insertable by admin." ON public.notifications FOR INSERT WITH CHECK (public.is_admin());
+  CREATE POLICY "Notifications updateable by admin." ON public.notifications FOR UPDATE USING (public.is_admin());
+  CREATE POLICY "Notifications deletable by admin." ON public.notifications FOR DELETE USING (public.is_admin());
 END $$;
