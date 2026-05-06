@@ -74,7 +74,7 @@ const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess }) => {
             <motion.div 
               animate={{ top: ['0%', '100%', '0%'] }}
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-              className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-neutral-600 to-transparent shadow-[0_0_15px_rgba(167,139,250,0.8)]"
+              className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-neutral-400 to-transparent shadow-[0_0_15px_rgba(255,255,255,0.4)]"
             />
             {/* Corner Accents */}
             <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-neutral-600 rounded-tl-xl"></div>
