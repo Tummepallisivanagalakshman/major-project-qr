@@ -300,9 +300,9 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
     >
       <Icon size={20} className={`transition-transform duration-300 group-hover:scale-110 ${activeTab === id ? 'text-white' : 'text-neutral-400 group-hover:text-neutral-800'}`} />
       <span className="font-black text-[11px] uppercase tracking-[0.15em]">{label}</span>
-      {id === 'notifications' && notifications.length > 0 && (
+      {id === 'notifications' && visibleNotifications.length > 0 && (
         <span className="ml-auto bg-rose-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow-lg shadow-rose-500/20 animate-pulse">
-          {notifications.length}
+          {visibleNotifications.length}
         </span>
       )}
     </button>
@@ -789,7 +789,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
                       </div>
                     </div>
                     <div className="space-y-6">
-                      {notifications.slice(0, 3).map((n) => (
+                      {visibleNotifications.slice(0, 3).map((n) => (
                         <div key={n.id} className="flex gap-6 p-6 rounded-3xl bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800/30 hover:bg-white dark:hover:bg-neutral-800 transition-all duration-300 group/notif cursor-pointer">
                           <div className={`w-14 h-14 rounded-2xl shrink-0 flex items-center justify-center shadow-sm ${
                             n.type === 'payment' ? 'bg-rose-500/10 text-rose-500' : 'bg-neutral-800/10 text-neutral-800'
@@ -808,7 +808,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
                           </div>
                         </div>
                       ))}
-                      {notifications.length === 0 && (
+                      {visibleNotifications.length === 0 && (
                         <div className="text-center py-20 bg-neutral-50 dark:bg-neutral-800/30 rounded-3xl border border-dashed border-neutral-200 dark:border-neutral-800">
                           <Bell size={48} className="mx-auto mb-4 text-neutral-300 dark:text-neutral-700" />
                           <p className="text-sm font-black text-neutral-400 uppercase tracking-widest">No new notifications</p>
@@ -1076,11 +1076,15 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
                 </div>
 
                 <div className="grid grid-cols-1 gap-6">
-                  {visibleNotifications.map((n) => (
+                  {notifications.map((n) => (
                     <motion.div 
                       key={n.id}
                       whileHover={{ y: -5 }}
-                      className="glass-card p-8 rounded-[2rem] border border-neutral-100 dark:border-neutral-800/50 shadow-sm hover:shadow-2xl transition-all group relative overflow-hidden"
+                      className={`glass-card p-8 rounded-[2rem] border shadow-sm hover:shadow-2xl transition-all group relative overflow-hidden ${
+                        readNotifications.includes(n.id)
+                          ? 'border-neutral-100 dark:border-neutral-800/50 opacity-60 bg-neutral-50/50 dark:bg-neutral-900/50'
+                          : 'border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900'
+                      }`}
                     >
 
                       <div className="flex items-start gap-6 relative z-10">
@@ -1112,28 +1116,34 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout, onU
                               <Calendar size={14} />
                               <span className="text-[10px] font-black uppercase tracking-widest">{n.date}</span>
                             </div>
-                            <button 
-                              onClick={() => handleMarkAsRead(n.id)}
-                              className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all ${
-                              n.type === 'emergency' ? 'text-rose-600 hover:text-rose-700' :
-                              n.type === 'payment' ? 'text-emerald-600 hover:text-emerald-700' :
-                              n.type === 'admin' ? 'text-neutral-900 hover:text-neutral-950' : 'text-neutral-900 hover:text-neutral-950'
-                            }`}>
-                              Mark as read
-                              <CheckCircle size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </button>
+                            {!readNotifications.includes(n.id) ? (
+                              <button 
+                                onClick={() => handleMarkAsRead(n.id)}
+                                className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all ${
+                                n.type === 'emergency' ? 'text-rose-600 hover:text-rose-700' :
+                                n.type === 'payment' ? 'text-emerald-600 hover:text-emerald-700' :
+                                n.type === 'admin' ? 'text-neutral-900 hover:text-neutral-950' : 'text-neutral-900 hover:text-neutral-950'
+                              }`}>
+                                Mark as read
+                                <CheckCircle size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                              </button>
+                            ) : (
+                              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
+                                <CheckCircle size={14} /> Read
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
                     </motion.div>
                   ))}
-                  {visibleNotifications.length === 0 && (
+                  {notifications.length === 0 && (
                     <div className="text-center py-32 glass-card rounded-[2.5rem] border border-dashed border-neutral-200 dark:border-neutral-800">
                       <div className="w-24 h-24 rounded-full bg-neutral-50 dark:bg-neutral-800 flex items-center justify-center text-neutral-200 dark:text-neutral-700 mx-auto mb-8">
                         <BellOff size={48} />
                       </div>
-                      <h5 className="text-xl font-black text-neutral-900 dark:text-white tracking-tight mb-2">All caught up!</h5>
-                      <p className="text-sm font-black text-neutral-400 uppercase tracking-widest">No new notifications at this time</p>
+                      <h5 className="text-xl font-black text-neutral-900 dark:text-white tracking-tight mb-2">No Notifications</h5>
+                      <p className="text-sm font-black text-neutral-400 uppercase tracking-widest">You have no notifications in your history</p>
                     </div>
                   )}
                 </div>
